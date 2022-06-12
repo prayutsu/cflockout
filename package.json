@@ -9,7 +9,7 @@
     "server": "nodemon server/index.js",
     "client": "npm start --prefix client",
     "build": "npm build --prefix client",
-    "install:client": "npm install --prefix client"
+    "install:client": "npm install --prefix client --force"
   },
   "author": "prayutsu",
   "license": "ISC",
