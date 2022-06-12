@@ -11,6 +11,12 @@ const getSolvedProblemsByAllUsers = async (handles) => {
           solvedProblems.add(submission.problem.name);
       }
     } else {
+      if (submissions.error) {
+        return {
+          status: "FAILED",
+          error: submissions.error,
+        };
+      }
       return { status: "FAILED", error: "Codeforces request failed." };
     }
   }
@@ -20,6 +26,9 @@ const getSolvedProblemsByAllUsers = async (handles) => {
 const getUnsolvedProblemsWithRating = async (handles, requirements) => {
   const res = await getSolvedProblemsByAllUsers(handles);
   if (res.status !== "OK") {
+    if (res.error) {
+      return { status: "FAILED", error: res.error };
+    }
     return { status: "FAILED", problems: {} };
   }
   const solvedProblems = res.solvedProblems;

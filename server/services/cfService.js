@@ -15,7 +15,15 @@ const makeCodeforcesRequest = async (config) => {
       const data = await axios
         .request(config)
         .then((response) => {
-          return response.data;
+          if (response.data && response.status === "OK") {
+            return { status: "OK", data: response.data };
+          } else {
+            return {
+              status: "FAILED",
+              error:
+                errorMsg || "Unable to fetch data. Codeforces API may be down.",
+            };
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -29,7 +37,7 @@ const makeCodeforcesRequest = async (config) => {
   }
   return {
     status: "FAILED",
-    error: errorMsg || "Unable to fetch from Codeforces API.",
+    error: errorMsg || "Unable to fetch data. Codeforces API may be down.",
   };
 };
 
@@ -44,7 +52,13 @@ const fetchUserSubmissions = async (handle, from = 1, count = 100000) => {
       count: count,
     },
   });
-  if (res && res.status && res.status === "OK") return res;
+  if (res && res.status && res.status === "OK") return res.data;
+  if (res && res.error) {
+    return {
+      status: "FAILED",
+      error: res.error,
+    };
+  }
   return {
     status: "FAILED",
     error: `Unable to fetch user's submissions\n${
@@ -58,7 +72,7 @@ const findWinnerForEachProblem = async (handles, problemNames) => {
   const winners = {};
   for (const handle of handles) {
     const response = await fetchUserSubmissions(handle, 1, 100);
-    if (response.status === "OK" && response.result) {
+    if (response.status === "OK" && response.data && response.data.result) {
       for (const submission of response.result) {
         if (submission.verdict !== "OK") continue;
         for (const problemName of problemNames) {
@@ -79,7 +93,7 @@ const findWinnerForEachProblem = async (handles, problemNames) => {
       return {
         status: "FAILED",
         error:
-          response && response.error
+          response && response.data && response.error
             ? response.error
             : "An error occured while determining solved problems.",
       };
