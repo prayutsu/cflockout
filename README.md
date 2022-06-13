@@ -2,18 +2,14 @@
 
 A web app to practice Codeforces Problems with friends in a Lockout contest format.
 
-## How to use?
+<!-- ## How to use?
 
-1. Go to www.cflockout.herokuapp.com.
-2. Make a new account or login to an existing account.
-3. TBD...
+## Installation -->
 
-## Installation
-
-1. Fork and clone the repository locally.
+<!-- 1. Fork and clone the repository locally.
 2. Go to the root and copy the environmet variables from .env.example. Make a new .env file in the root and paste the environment variables here.
 3. In the root, run command -
    `$ npm run setup`
    to install frontend and backend dependencies.
 4. To run the development server locally, run -
-   `$ npm run dev`
+   `$ npm run dev` -->
