@@ -113,6 +113,12 @@ export const contestSlice = createSlice({
       state.isLoading = false;
       state.message = "";
     },
+    resetAllContestantsList: (state) => {
+      state.contestsList = [];
+      state.isSuccess = false;
+      state.isError = false;
+      state.isLoading = false;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -156,20 +162,21 @@ export const contestSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.message = action.payload;
+      })
+      .addCase(getContests.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(getContests.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.contestsList = action.payload;
+      })
+      .addCase(getContests.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
       });
-    // .addCase(getContests.pending, (state) => {
-    //   state.isLoading = true;
-    // })
-    // .addCase(getContests.fulfilled, (state, action) => {
-    //   state.isLoading = false;
-    //   state.isSuccess = true;
-    //   state.contestsList = action.payload;
-    // })
-    // .addCase(getContests.rejected, (state, action) => {
-    //   state.isLoading = false;
-    //   state.isError = true;
-    //   state.message = action.payload;
-    // })
   },
 });
 

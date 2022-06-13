@@ -28,7 +28,7 @@ const getUpdatedContestantsList = async (
 /** Fetches all contests related to a user. */
 const getContests = asyncHandler(async (req, res) => {
   const contests = await Contest.find({ users: req.user._id });
-  res.status(200).json(contests);
+  res.status(200).json({ success: true, contests });
 });
 
 /** Fetches the ongoing contest related to a user. */

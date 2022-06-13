@@ -10,6 +10,7 @@ import { changeIndex } from "../features/nav/navSlice";
 import { toast } from "react-toastify";
 import { UserGroupIcon } from "@heroicons/react/solid";
 import { reset } from "../features/contest/liveContestSlice";
+import PleaseLoginToView from "../components/PleaseLoginToView";
 
 const JoinContest = () => {
   const [contestId, setContestId] = useState("");
@@ -53,7 +54,7 @@ const JoinContest = () => {
         resolve(id);
       });
       resetState.then((id) => {
-        socket.emit('updateContest', id);
+        socket.emit("updateContest", id);
         navigate(`/contests/live?contestId=${id}`, {
           replace: true,
         });
@@ -75,11 +76,7 @@ const JoinContest = () => {
   };
 
   if (!user) {
-    return (
-      <div>
-        <h1>You need to login to join a contest</h1>
-      </div>
-    );
+    return <PleaseLoginToView />;
   }
 
   return (

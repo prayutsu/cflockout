@@ -5,6 +5,7 @@ import { register, reset } from "../features/auth/authSlice";
 import { LockClosedIcon } from "@heroicons/react/solid";
 import { ReactComponent as CflockoutLogo } from "../components/assets/cflockout-logo-icon.svg";
 import { toast } from "react-toastify";
+import AlreadyLoggedIn from "../components/AlreadyLoggedIn";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -91,7 +92,7 @@ export default function Signup() {
   };
 
   if (user) {
-    return <div>You are already logged in. Go to homepage.</div>;
+    return <AlreadyLoggedIn />;
   }
 
   return (

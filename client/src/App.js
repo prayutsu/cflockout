@@ -11,6 +11,7 @@ import LiveContest2 from "./pages/LiveContest2";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./components/Footer";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -22,11 +23,12 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/contests/create" element={<CreateContest />} />
             <Route exact path="/contests/join" element={<JoinContest />} />
             <Route path="/contests/live" element={<LiveContest2 />} />
           </Routes>
-          <Footer />
+          {/* <Footer />/ */}
         </Router>
       </SocketContext.Provider>
       <ToastContainer

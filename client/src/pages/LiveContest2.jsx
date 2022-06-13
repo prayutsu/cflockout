@@ -18,6 +18,8 @@ import CopyButton from "../components/CopyButton";
 import { RefreshIcon } from "@heroicons/react/outline";
 import Spinner from "../components/Spinner";
 import { SocketContext } from "../context/socket";
+import NoContestFound from "../components/NoContestFound";
+import PleaseLoginToView from "../components/PleaseLoginToView";
 
 const LiveContest2 = ({ liveContestState, userState }) => {
   const [progress, setProgress] = useState(70);
@@ -60,7 +62,7 @@ const LiveContest2 = ({ liveContestState, userState }) => {
   useEffect(() => {
     if (isError) {
       toast.error(message);
-      dispatch(resetError())
+      dispatch(resetError());
     }
   }, [isError, message, dispatch]);
 
@@ -169,11 +171,7 @@ const LiveContest2 = ({ liveContestState, userState }) => {
   };
 
   if (!user) {
-    return (
-      <div>
-        <h1>You need to login to participate in a contest</h1>
-      </div>
-    );
+    return <PleaseLoginToView />;
   }
 
   return loading ? (
@@ -347,7 +345,7 @@ const LiveContest2 = ({ liveContestState, userState }) => {
       )}
     </div>
   ) : (
-    <div>No ongoing contests found!!</div>
+    <NoContestFound />
   );
 };
 

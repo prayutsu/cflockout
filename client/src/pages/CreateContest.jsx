@@ -4,15 +4,19 @@ import {
   MIN_DURATION,
   MAX_DURATION,
 } from "../config/constants";
-import { resetSuccessIndicators, createContest } from "../features/contest/contestSlice";
+import {
+  resetSuccessIndicators,
+  createContest,
+} from "../features/contest/contestSlice";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PlusCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 import { changeIndex } from "../features/nav/navSlice";
 import { ReactComponent as Codethinking } from "../components/assets/code-thinking.svg";
 import { toast } from "react-toastify";
-import {reset} from "../features/contest/liveContestSlice";
+import { reset } from "../features/contest/liveContestSlice";
 import { SocketContext } from "../context/socket";
+import PleaseLoginToView from "../components/PleaseLoginToView";
 
 const CreateContest = () => {
   const navigate = useNavigate();
@@ -113,7 +117,7 @@ const CreateContest = () => {
   };
 
   if (!user) {
-    return <div>Please login to create a contest.</div>;
+    return <PleaseLoginToView />;
   }
 
   return (
