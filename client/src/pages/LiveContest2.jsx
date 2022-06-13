@@ -4,6 +4,7 @@ import { connect, useDispatch } from "react-redux";
 import {
   getLiveContest2,
   leaveContest,
+  resetError,
   solveProblem,
   startContest,
 } from "../features/contest/liveContestSlice";
@@ -59,8 +60,9 @@ const LiveContest2 = ({ liveContestState, userState }) => {
   useEffect(() => {
     if (isError) {
       toast.error(message);
+      dispatch(resetError())
     }
-  }, [isError, message]);
+  }, [isError, message, dispatch]);
 
   const handleLeaveContest = async () => {
     const contestId = liveContest._id;

@@ -2,7 +2,7 @@ const asyncHandler = require("express-async-handler");
 const { validationResult } = require("express-validator");
 const Contest = require("../models/contestModel");
 const { MAX_PLAYERS } = require("../config/constants");
-const { cfService } = require("../services/cfService");
+const { getUpdatedRankList, myVar } = require("../services/cfService");
 const types = require("mongoose").Types;
 
 const getUpdatedContestantsList = async (
@@ -284,8 +284,10 @@ const invalidateContest = asyncHandler(async (req, res) => {
   const contestDuration =
     ongoingContest.startedAt.getTime() + ongoingContest.duration * 60 * 1000;
 
-  const solvedProblems = await cfService.getUpdatedRankList(ongoingContest);
+  console.log("Heree..... myVar = ", myVar);
+  const solvedProblems = await getUpdatedRankList(ongoingContest);
 
+  console.log("solvedProblems", solvedProblems);
   const updatedProblems = [];
 
   for (const problem of ongoingContest.problems) {
@@ -296,7 +298,7 @@ const invalidateContest = asyncHandler(async (req, res) => {
         --i;
         continue;
       }
-      if (problem.name === solveProblem[i].problemName && !problem.isSolved) {
+      if (problem.name === solvedProblems[i].problemName && !problem.isSolved) {
         updatedProblems[updatedProblems.length - 1].isSolved = true;
         updatedProblems[updatedProblems.length - 1].solvedBy =
           solvedProblems[i].username;

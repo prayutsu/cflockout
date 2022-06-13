@@ -148,6 +148,11 @@ export const liveContestSlice = createSlice({
   initialState,
   reducers: {
     reset: (state) => initialState,
+    resetError: (state) => {
+      state.isError = false;
+      state.isSuccess = false;
+      state.message = "";
+    },
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -227,5 +232,5 @@ export const liveContestSlice = createSlice({
   },
 });
 
-export const { reset } = liveContestSlice.actions;
+export const { reset, resetError } = liveContestSlice.actions;
 export default liveContestSlice.reducer;

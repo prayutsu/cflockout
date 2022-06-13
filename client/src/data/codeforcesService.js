@@ -15,7 +15,7 @@ const makeCodeforcesRequest = async (config) => {
       const data = await axios
         .request(config)
         .then((response) => {
-          if (response.data && response.status === "OK") {
+          if (response.data && response.data.status === "OK") {
             return { status: "OK", data: response.data };
           } else {
             return {

@@ -108,7 +108,9 @@ const getUpdatedRankList = async (liveContest) => {
   // dispatch(getLiveContest());
   const unsolvedProblems = [];
   const handles = [];
+  console.log("In updated ranklist");
   if (liveContest) {
+    console.log("liveContest", liveContest);
     for (const contestant of liveContest.contestants) {
       handles.push(contestant.username);
     }
@@ -117,6 +119,8 @@ const getUpdatedRankList = async (liveContest) => {
         unsolvedProblems.push(problem.name);
       }
     }
+
+    console.log("Handles", handles);
 
     const res = await findWinnerForEachProblem(handles, unsolvedProblems);
     if (res.status !== "OK") {
@@ -137,10 +141,9 @@ const getUpdatedRankList = async (liveContest) => {
   return [];
 };
 
-const cfService = {
-  fetchUserSubmissions,
-  findWinnerForEachProblem,
-  getUpdatedRankList,
-};
+const myVar = "Hello world!!";
 
-module.exports = cfService;
+module.exports = {
+  getUpdatedRankList,
+  myVar,
+};
