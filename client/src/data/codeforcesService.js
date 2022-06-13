@@ -52,6 +52,7 @@ const fetchUserSubmissions = async (handle, from = 1, count = 100000) => {
       count: count,
     },
   });
+
   if (res && res.status && res.status === "OK") return res.data;
   if (res && res.error) {
     return {
@@ -91,7 +92,7 @@ const findWinnerForEachProblem = async (handles, problemNames) => {
   const winners = {};
   for (const handle of handles) {
     const response = await fetchUserSubmissions(handle, 1, 100);
-    if (response.status === "OK" && response.data && response.data.result) {
+    if (response.status === "OK" && response.result) {
       for (const submission of response.result) {
         if (submission.verdict !== "OK") continue;
         for (const problemName of problemNames) {
@@ -112,8 +113,8 @@ const findWinnerForEachProblem = async (handles, problemNames) => {
       return {
         status: "FAILED",
         error:
-          response && response.data && response.error
-            ? response.error
+          response && response.data && response.data.error
+            ? response.data.error
             : "An error occured while determining solved problems.",
       };
     }
