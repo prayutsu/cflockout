@@ -83,7 +83,7 @@ const JoinContest = () => {
   }
 
   return (
-    <div className="w-full px-2 md:px-8 py-4 md:py-12">
+    <div className="w-full h-[100vh] px-2 md:px-8 py-4 md:py-12">
       <div className="flex items-center justify-center">
         <div className="bg-gray-50 p-8 rounded-lg w-full max-w-md">
           <form id="join-contest-form" className="w-full">

@@ -43,7 +43,6 @@ export default function Navbar() {
     dispatch(changeIndex(selectedItemIndex));
   }, [dispatch, selectedItemIndex]);
 
-
   const handleLogout = (e) => {
     e.preventDefault();
     dispatch(logout());
@@ -69,8 +68,14 @@ export default function Navbar() {
               </div>
               <div className="flex-1 flex items-center justify-center sm:justify-start">
                 <div className="flex-shrink-0 flex items-center">
-                  <CflockoutLogo className="hidden lg:block h-10 w-auto" />
-                  <CflockoutIconLogo className="lg:hidden h-10 w-auto" />
+                  <CflockoutLogo
+                    className="hidden lg:block h-10 w-auto cursor-pointer"
+                    onClick={() => navigate("/")}
+                  />
+                  <CflockoutIconLogo
+                    onClick={() => navigate("/")}
+                    className="lg:hidden h-10 w-auto cursor-pointer"
+                  />
                 </div>
                 <div className="hidden sm:block sm:ml-6">
                   <div className="flex space-x-4">
@@ -135,14 +140,14 @@ export default function Navbar() {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                      <Menu.Items className="z-20 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                         <Menu.Item>
                           {({ active }) => (
                             <a
                               href="#"
                               className={classNames(
                                 active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700"
+                                "block px-4 py-2 text-sm text-gray-700 cursor-pointer"
                               )}
                             >
                               Your Profile
@@ -155,7 +160,7 @@ export default function Navbar() {
                               onClick={handleLogout}
                               className={classNames(
                                 active ? "bg-gray-100" : "",
-                                "block px-4 py-2 text-sm text-gray-700 w-full"
+                                "block px-4 py-2 text-sm text-gray-700 w-full cursor-pointer"
                               )}
                             >
                               Sign out

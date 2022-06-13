@@ -177,7 +177,7 @@ const LiveContest2 = ({ liveContestState, userState }) => {
   return loading ? (
     <LoadingBar progress={progress} onLoaderFinished={() => setProgress(0)} />
   ) : liveContest ? (
-    <div className="h-full pt-10 w-full max-w-[1240px] p-4 md:p-12 lg:px-16">
+    <div className="h-screen pt-10 w-full max-w-[1240px] p-4 md:p-12 lg:px-16">
       {/* Timer and contest id */}
       <div className="md:flex md:justify-between md:items-center w-full">
         <Suspense fallback={<Spinner />}>

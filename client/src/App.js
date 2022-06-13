@@ -10,6 +10,7 @@ import Navbar from "./components/Navbar";
 import LiveContest2 from "./pages/LiveContest2";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route exact path="/contests/join" element={<JoinContest />} />
             <Route path="/contests/live" element={<LiveContest2 />} />
           </Routes>
+          <Footer />
         </Router>
       </SocketContext.Provider>
       <ToastContainer
