@@ -229,7 +229,7 @@ const LiveContest2 = ({ liveContestState, userState }) => {
                 className="bg-white-200 py-2 w-full grid grid-cols-4 gap-2"
               >
                 <div className="text-center col-span-2 p-2">
-                  <h3 className="text-cyan-800 font-semibold">
+                  <h3 className="text-cyan-800 font-bold tracking-wider underline">
                     <a
                       target="_blank"
                       rel="noreferrer"
