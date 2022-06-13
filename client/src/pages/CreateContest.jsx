@@ -117,7 +117,7 @@ const CreateContest = () => {
   }
 
   return (
-    <div className="w-screen h-screen lg:grid lg:grid-cols-3 lg:gap-6 p-6 lg:px-24 lg:py-16">
+    <div className="w-screen min-h-screen h-full lg:grid lg:grid-cols-3 lg:gap-6 p-6 lg:px-24 lg:py-16">
       <div className="lg:col-span-1">
         <div className="px-4 sm:px-0 lg:py-4">
           <h3 className="text-3xl font-bold leading-6 text-center text-gray-900">
