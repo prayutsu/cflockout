@@ -47,8 +47,8 @@ const sendMail = async (user) => {
         from: process.env.CFLOCKOUT_EMAIL_ID,
         to: user.email,
         subject: "Verify your account",
-        text: `Please click on this link to verify your email: ${url}`,
-        html: `Please click on this link to verify your email: <a href="${url}">Click here to verify</a>`,
+        text: `Please click on this link to verify your email.\n${url}`,
+        html: `<h3>Please click on this link to verify your email\n <a href="${url}">Click here to verify</a></h3>`,
       };
       transporter.sendMail(mailOptions);
       console.log(`Email sent to ${user.email}`);
@@ -75,6 +75,13 @@ const registerUser = asyncHandler(async (req, res) => {
   if (response.data.status !== "OK") {
     res.status(400);
     throw new Error(`Invalid CF username ${username}!`);
+  }
+
+  // Check if user already exists.
+  const userAlreadyInDb = await User.findOne({ email });
+  if (userAlreadyInDb.verified) {
+    res.status(400);
+    throw new Error(`This email is already registered! ${userAlreadyInDb}`);
   }
 
   // Generate hash of the password.
