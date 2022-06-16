@@ -21,18 +21,20 @@ function App() {
       <SocketContext.Provider value={socket}>
         <Router>
           <ScrollToTop>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/contests/create" element={<CreateContest />} />
-              <Route exact path="/contests/join" element={<JoinContest />} />
-              <Route path="/contests/live" element={<LiveContest2 />} />
-              <Route path="/verify" element={<VerifyEmail />} />
-            </Routes>
-            {/* <Footer /> */}
+            <div className="overflow-x-hidden min-h-screen">
+              <Navbar />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/contests/create" element={<CreateContest />} />
+                <Route exact path="/contests/join" element={<JoinContest />} />
+                <Route path="/contests/live" element={<LiveContest2 />} />
+                <Route path="/verify" element={<VerifyEmail />} />
+              </Routes>
+              <Footer />
+            </div>
           </ScrollToTop>
         </Router>
       </SocketContext.Provider>
