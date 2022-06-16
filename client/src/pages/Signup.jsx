@@ -36,9 +36,13 @@ export default function Signup() {
         resolve();
       });
       resetState.then(() => {
-        navigate("/", {
-          replace: true,
-        });
+          toast.info(
+            "A verification email has been sent. Please click the verification link to complete setting up your account."
+          );
+          toast.warn("Don't forget to check spam folder")
+          navigate("/", {
+            replace: true,
+          });
       });
     }
   }, [isError, dispatch, navigate, isSuccess, message]);

@@ -21,6 +21,15 @@ const login = async (userData) => {
   return response.data;
 };
 
+// Verify user.
+const verify = async (token) => {
+  const response = await axios.put(`${AUTH_API_URL}/verify/${token}`);
+  if (response.data.success) {
+    localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
+  }
+  return response.data;
+};
+
 // Logout user
 const logout = () => {
   localStorage.removeItem(USER_KEY);
@@ -30,6 +39,7 @@ const authService = {
   register,
   logout,
   login,
+  verify,
 };
 
 export default authService;
