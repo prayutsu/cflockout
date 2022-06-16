@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import LoadingBar from "react-top-loading-bar";
 import { reset, verify } from "../features/auth/authSlice";
@@ -48,10 +48,16 @@ const VerifyEmail = () => {
           <VerifiedMail className="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-full max-w-md" />
         </div>
         {/* Content */}
-        <div className="flex flex-1 flex-col items-center">
+        <div className="flex flex-1 flex-col items-center gap-4">
           <h1 className="text-2xl text-center font-semibold tracking-wide">
             Your account has been verified successfully!
           </h1>
+          <Link
+            className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+            to="/"
+          >
+            Home
+          </Link>
         </div>
       </div>
     </div>

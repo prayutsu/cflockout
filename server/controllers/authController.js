@@ -47,8 +47,9 @@ const sendMail = async (user) => {
         from: process.env.CFLOCKOUT_EMAIL_ID,
         to: user.email,
         subject: "Verify your account",
-        text: `Please click on this link to verify your email.\n${url}`,
-        html: `<h3>Please click on this link to verify your email\n <a href="${url}">Click here to verify</a></h3>`,
+        secure: true,
+        text: `Hi ${user.name},\n\nNote: If this mail appears in spam folder, make sure to report it not phishing to be able to click the link.\nPlease click the below link to verify your email.\n${url}`,
+        html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to verify your email.<br> <a href="${url}">Click here to verify</a></h3>`,
       };
       transporter.sendMail(mailOptions);
       console.log(`Email sent to ${user.email}`);
@@ -79,7 +80,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   // Check if user already exists.
   const userAlreadyInDb = await User.findOne({ email });
-  if (userAlreadyInDb.verified) {
+  if (userAlreadyInDb && userAlreadyInDb.verified) {
     res.status(400);
     throw new Error(`This email is already registered! ${userAlreadyInDb}`);
   }

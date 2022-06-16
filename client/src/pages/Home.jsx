@@ -5,6 +5,7 @@ import { ReactComponent as UnsolvedProblems } from "../components/assets/unsolve
 import { ReactComponent as CompeteWithFriends } from "../components/assets/compete-with-friends.svg";
 import { ReactComponent as Compete } from "../components/assets/compete.svg";
 import { Link } from "react-router-dom";
+import HeaderBanner from "../components/HeaderBanner";
 
 const Home = () => {
   useEffect(() => {
@@ -13,6 +14,9 @@ const Home = () => {
 
   return (
     <div className="h-full w-screen overflow-hidden">
+      <section className="relative">
+        <HeaderBanner />
+      </section>
       {/* Hero section */}
       <section className="relative p-2 md:px-6 lg:px-24">
         <div className="container flex flex-col-reverse lg:flex-row items-center gap-12 mt-14 lg:mt-28">
@@ -35,7 +39,7 @@ const Home = () => {
                 Codeforces
               </a>
               <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-                <Link to='/contests/create'>Get Started</Link>
+                <Link to="/contests/create">Get Started</Link>
               </button>
             </div>
           </div>
@@ -75,7 +79,7 @@ const Home = () => {
                 unsolved by all participants of the contest.
               </p>
               <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-              <Link to='/contests/live'>Live</Link>
+                <Link to="/contests/live">Live</Link>
               </button>
             </div>
           </div>
@@ -92,7 +96,7 @@ const Home = () => {
                 You can set ratings of the codeforces problems to your liking.
               </p>
               <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-              <Link to='/contests/create'>Create</Link>
+                <Link to="/contests/create">Create</Link>
               </button>
             </div>
             {/* Image */}
@@ -116,7 +120,7 @@ const Home = () => {
                 an already solved problem doesn't give you any points.
               </p>
               <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-              <Link to='/contests/join'>Join Contest</Link>
+                <Link to="/contests/join">Join Contest</Link>
               </button>
             </div>
           </div>
