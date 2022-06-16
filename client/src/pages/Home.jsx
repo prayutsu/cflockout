@@ -13,7 +13,7 @@ const Home = () => {
   }, []); // eslint-disable-line
 
   return (
-    <div className="h-full w-screen overflow-hidden">
+    <div className="h-full w-full overflow-hidden">
       <section className="relative">
         <HeaderBanner />
       </section>

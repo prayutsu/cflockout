@@ -41,7 +41,7 @@ const VerifyEmail = () => {
   return loading ? (
     <LoadingBar progress={progress} onLoaderFinished={() => setProgress(0)} />
   ) : isSuccess ? (
-    <div className="w-full p-4 md:p-12 ">
+    <div className="min-h-screen w-full p-4 md:p-12 ">
       <div className="container flex flex-col lg:flex-row items-center gap-12 mt-14 lg:mt-28">
         {/* Image */}
         <div className="flex-1 flex justify-center items-center mb-10 md:mb-16 lg:mb-0 z-10">
