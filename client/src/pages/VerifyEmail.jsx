@@ -29,7 +29,7 @@ const VerifyEmail = () => {
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (isSuccess && user.verifed) {
+    if (isSuccess && user && user.verifed) {
       setLoading(false);
     }
     if (isError) {
