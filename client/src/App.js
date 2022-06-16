@@ -12,23 +12,28 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./components/Footer";
 import Dashboard from "./pages/Dashboard";
+import VerifyEmail from "./pages/VerifyEmail";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <>
       <SocketContext.Provider value={socket}>
         <Router>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/contests/create" element={<CreateContest />} />
-            <Route exact path="/contests/join" element={<JoinContest />} />
-            <Route path="/contests/live" element={<LiveContest2 />} />
-          </Routes>
-          {/* <Footer />/ */}
+          <ScrollToTop>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/contests/create" element={<CreateContest />} />
+              <Route exact path="/contests/join" element={<JoinContest />} />
+              <Route path="/contests/live" element={<LiveContest2 />} />
+              <Route path="/verify" element={<VerifyEmail />} />
+            </Routes>
+            {/* <Footer /> */}
+          </ScrollToTop>
         </Router>
       </SocketContext.Provider>
       <ToastContainer

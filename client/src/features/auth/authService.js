@@ -6,15 +6,21 @@ const AUTH_API_URL = `${SERVER_URL}api/auth`;
 // Register user.
 const register = async (userData) => {
   const response = await axios.post(`${AUTH_API_URL}/register`, userData);
-  if (response.data.success) {
-    localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
-  }
   return response.data;
 };
 
 // Login user.
 const login = async (userData) => {
   const response = await axios.post(`${AUTH_API_URL}/login`, userData);
+  if (response.data.success) {
+    localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
+  }
+  return response.data;
+};
+
+// Verify user.
+const verify = async (token) => {
+  const response = await axios.put(`${AUTH_API_URL}/verify/${token}`);
   if (response.data.success) {
     localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
   }
@@ -30,6 +36,7 @@ const authService = {
   register,
   logout,
   login,
+  verify,
 };
 
 export default authService;

@@ -6,6 +6,7 @@ import { LockClosedIcon } from "@heroicons/react/solid";
 import { ReactComponent as CflockoutLogo } from "../components/assets/cflockout-logo-icon.svg";
 import { toast } from "react-toastify";
 import AlreadyLoggedIn from "../components/AlreadyLoggedIn";
+import { toggleHeaderBanner } from "../features/nav/navSlice";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -36,6 +37,11 @@ export default function Signup() {
         resolve();
       });
       resetState.then(() => {
+        dispatch(toggleHeaderBanner());
+        toast.warn(
+          "If the mail is in spam, don't forget to report it `not phishing` to be able to see the verification link!",
+          { autoClose: 10000 }
+        );
         navigate("/", {
           replace: true,
         });

@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   selectedIndex: 0,
+  isHeaderBannerOpen: false,
 };
 
 export const navSlice = createSlice({
@@ -14,8 +15,12 @@ export const navSlice = createSlice({
     changeToNone: (state) => {
       state.selectedIndex = 10;
     },
+    toggleHeaderBanner: (state) => {
+      state.isHeaderBannerOpen = !state.isHeaderBannerOpen;
+    },
   },
 });
 
-export const { changeIndex, changeToNone } = navSlice.actions;
+export const { changeIndex, changeToNone, toggleHeaderBanner } =
+  navSlice.actions;
 export default navSlice.reducer;
