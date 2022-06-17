@@ -74,7 +74,7 @@ const Home = () => {
             </div>
             {/* Content */}
             <div className="flex flex-1 flex-col items-center lg:items-start">
-              <h1 className="text-3xl text-cyan-700">
+              <h1 className="text-3xl text-cyan-700 text-center lg:text-left">
                 Practice only unsolved problems
               </h1>
               <p className="text-gray-600 text-lg my-4 text-center lg:text-left sm:w-3/4 lg:w-full">
@@ -95,7 +95,7 @@ const Home = () => {
           <div className="container flex flex-col-reverse lg:flex-row items-center justify-center gap-x-24">
             {/* Content */}
             <div className="flex flex-1 flex-col items-center lg:items-start">
-              <h1 className="text-3xl text-cyan-700">
+              <h1 className="text-3xl text-cyan-700 text-center lg:text-left">
                 Chooose Custom difficulty levels
               </h1>
               <p className="text-gray-600 text-lg my-4 text-center lg:text-left sm:w-3/4 lg:w-full">
@@ -123,7 +123,7 @@ const Home = () => {
             </div>
             {/* Content */}
             <div className="flex flex-1 flex-col items-center lg:items-start">
-              <h1 className="text-3xl text-cyan-700">Compete in a fun way</h1>
+              <h1 className="text-3xl text-center lg:text-left text-cyan-700">Compete in a fun way</h1>
               <p className="text-gray-600 text-lg my-4 text-center lg:text-left sm:w-3/4 lg:w-full">
                 Solve problems faster than your friends to get points. Solving
                 an already solved problem doesn't give you any points.
