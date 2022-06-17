@@ -50,7 +50,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="w-full h-full min-h-screen px-2 py-4 md:px-4 md:py-6 lg:p-16">
+    <div className="w-full h-full px-2 py-4 md:px-4 md:py-6 lg:p-16">
       <div className="flex items-center justify-center gap-4 flex-wrap">
         <h1 className="w-full text-center text-4xl font-bold tracking-wide text-gray-900">
           All Contests

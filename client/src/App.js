@@ -21,7 +21,7 @@ function App() {
       <SocketContext.Provider value={socket}>
         <Router>
           <ScrollToTop>
-            <div className="overflow-x-hidden min-h-screen">
+            <div className="overflow-x-hidden h-full min-h-screen relative flex flex-col">
               <Navbar />
               <Routes>
                 <Route path="/" element={<Home />} />

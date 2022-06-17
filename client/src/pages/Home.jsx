@@ -38,9 +38,12 @@ const Home = () => {
               >
                 Codeforces
               </a>
-              <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-                <Link to="/contests/create">Get Started</Link>
-              </button>
+              <Link
+                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-black bg-gray-200 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                to="/contests/create"
+              >
+                Get Started
+              </Link>
             </div>
           </div>
           {/* Image */}
@@ -78,9 +81,12 @@ const Home = () => {
                 CfLockout creates contest of only those problems which are
                 unsolved by all participants of the contest.
               </p>
-              <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-                <Link to="/contests/live">Live</Link>
-              </button>
+              <Link
+                to="/contests/live"
+                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+              >
+                Live
+              </Link>
             </div>
           </div>
         </div>
@@ -95,9 +101,12 @@ const Home = () => {
               <p className="text-gray-600 text-lg my-4 text-center lg:text-left sm:w-3/4 lg:w-full">
                 You can set ratings of the codeforces problems to your liking.
               </p>
-              <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-                <Link to="/contests/create">Create</Link>
-              </button>
+              <Link
+                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                to="/contests/create"
+              >
+                Create
+              </Link>
             </div>
             {/* Image */}
             <div className="flex flex-1 justify-center z-10 mb-10 lg:mb-0">
@@ -119,9 +128,12 @@ const Home = () => {
                 Solve problems faster than your friends to get points. Solving
                 an already solved problem doesn't give you any points.
               </p>
-              <button className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500">
-                <Link to="/contests/join">Join Contest</Link>
-              </button>
+              <Link
+                to="/contests/join"
+                className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+              >
+                Join Contest
+              </Link>
             </div>
           </div>
         </div>
