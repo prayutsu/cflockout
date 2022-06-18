@@ -35,7 +35,7 @@ export default function Navbar() {
   else if (location.pathname === "/create") selectedItemIndex = 2;
   else if (location.pathname === "/join") selectedItemIndex = 3;
   else if (location.pathname.includes("/live")) selectedItemIndex = 4;
-  else if (location.pathname === "/login" || location.pathname === "/signup")
+  else if (location.pathname === "/auth/login" || location.pathname === "/auth/signup")
     selectedItemIndex = 5;
   else selectedItemIndex = 6;
 
@@ -174,7 +174,7 @@ export default function Navbar() {
                   <div className="border-l-slate-600 border-l-2 pl-3 ml-3">
                     <button
                       onClick={() => {
-                        navigate("/login");
+                        navigate("/auth/login");
                         dispatch(changeIndex(5));
                       }}
                       className={classNames(

@@ -1,61 +1,104 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { login, resetIsSucess, reset } from "../features/auth/authSlice";
+import { register, reset } from "../../features/auth/authSlice";
 import { LockClosedIcon } from "@heroicons/react/solid";
-import { ReactComponent as CflockoutLogo } from "../components/assets/cflockout-logo-icon.svg";
-import { toast } from "react-toastify"
-import AlreadyLoggedIn from "../components/AlreadyLoggedIn";
+import { ReactComponent as CflockoutLogo } from "../../components/assets/cflockout-logo-icon.svg";
+import { toast } from "react-toastify";
+import AlreadyLoggedIn from "../../components/AlreadyLoggedIn";
+import { toggleHeaderBanner } from "../../features/nav/navSlice";
 
-export default function Login() {
+export default function Signup() {
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
+    username: "",
     password: "",
+    password2: "",
   });
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { user, isSuccess, isError, message, isLoading } = useSelector(
+  const { user, isLoading, isError, isSuccess, message } = useSelector(
     (state) => state.auth
   );
 
   useEffect(() => {
+    if (isError) {
+      toast.error(message);
+      dispatch(reset());
+    }
+
     if (isSuccess) {
       // reset user and navigate to '/'
       const resetState = new Promise((resolve, _) => {
-        dispatch(resetIsSucess());
+        dispatch(reset());
         resolve();
       });
       resetState.then(() => {
+        dispatch(toggleHeaderBanner());
+        toast.warn(
+          "If the mail is in spam, don't forget to report it `not phishing` to be able to see the verification link!",
+          { autoClose: 10000 }
+        );
         navigate("/", {
           replace: true,
         });
       });
     }
-    if (isError) {
-      toast.error(message);
-      dispatch(reset());
-    }
-  }, [isSuccess, dispatch, navigate, isError, message]);
+  }, [isError, dispatch, navigate, isSuccess, message]);
 
-  const onChange = (event) => {
+  const onChange = (e) => {
     setFormData((previousState) => ({
       ...previousState,
-      [event.target.name]: event.target.value,
+      [e.target.name]: e.target.value,
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (document.getElementById("signin-form").reportValidity()) {
-      const userData = { email: formData.email, password: formData.password };
-      dispatch(login(userData));
+  const checkCfUsername = (cfUsername) =>
+    new Promise(async (resolve, reject) => {
+      try {
+        const response = await fetch(
+          `https://codeforces.com/api/user.info?handles=${cfUsername}`
+        );
+        const data = await response.json();
+        if (data.status === "OK") {
+          resolve();
+        }
+        reject();
+      } catch (error) {
+        reject();
+      }
+    });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (document.getElementById("signup-form").reportValidity()) {
+      if (formData.password !== formData.password2) {
+        toast.error("Passwords do not match");
+        dispatch(reset());
+      } else {
+        checkCfUsername(formData.username)
+          .then(() => {
+            const userData = {
+              name: formData.name,
+              username: formData.username,
+              email: formData.email,
+              password: formData.password,
+            };
+            dispatch(register(userData));
+          })
+          .catch(() => {
+            toast.error(`CF username - ${formData.username} is invalid!`);
+            dispatch(reset());
+          });
+      }
     }
   };
 
   if (user) {
-    return <AlreadyLoggedIn/>;
+    return <AlreadyLoggedIn />;
   }
 
   return (
@@ -64,21 +107,20 @@ export default function Login() {
         <div className="max-w-md w-full space-y-8">
           <div>
             <CflockoutLogo className="mx-auto h-20 w-auto" />
-
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-              Sign in to your account
+              Create a new account
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-              Or{" "}
+              Already have an account ?&nbsp;
               <Link
-                to="/signup"
+                to="/auth/login"
                 className="font-medium text-cyan-600 hover:text-cyan-500"
               >
-                create an account
+                Log In here
               </Link>
             </p>
           </div>
-          <form id="signin-form" className="mt-8 space-y-6">
+          <form id="signup-form" className="mt-8 space-y-6">
             <div className="grid grid-cols-1 gap-y-4">
               <div>
                 <label
@@ -102,6 +144,47 @@ export default function Login() {
 
               <div>
                 <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  required
+                  minLength={2}
+                  autoComplete="name"
+                  value={formData.name}
+                  placeholder="Abhay Garg"
+                  onChange={onChange}
+                  className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Codeforces username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  id="username"
+                  required
+                  autoComplete="username"
+                  value={formData.username}
+                  placeholder="prayutsu"
+                  onChange={onChange}
+                  className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
+                />
+              </div>
+
+              <div>
+                <label
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700"
                 >
@@ -113,23 +196,32 @@ export default function Login() {
                   id="password"
                   required
                   minLength={4}
-                  autoComplete="current-address"
+                  maxLength={16}
+                  autoComplete="password"
                   value={formData.password}
                   onChange={onChange}
                   placeholder="********"
                   className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
                 />
               </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="text-sm">
-                <a
-                  href="#"
-                  className="font-medium text-cyan-600 hover:text-cyan-500"
+              <div>
+                <label
+                  htmlFor="password2"
+                  className="block text-sm font-medium text-gray-700"
                 >
-                  Forgot your password?
-                </a>
+                  Confirm password
+                </label>
+                <input
+                  type="password"
+                  name="password2"
+                  id="password2"
+                  required
+                  autoComplete="password"
+                  value={formData.password2}
+                  onChange={onChange}
+                  placeholder="********"
+                  className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
+                />
               </div>
             </div>
 
@@ -167,7 +259,7 @@ export default function Login() {
                     />
                   )}
                 </span>
-                Sign in
+                Sign up
               </button>
             </div>
           </form>
