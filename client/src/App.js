@@ -14,6 +14,7 @@ import Footer from "./components/Footer";
 import Dashboard from "./pages/Dashboard";
 import VerifyEmail from "./pages/VerifyEmail";
 import ScrollToTop from "./components/ScrollToTop";
+import EditProfile from "./pages/profile/EditProfile";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
                 <Route exact path="/contests/join" element={<JoinContest />} />
                 <Route path="/contests/live" element={<LiveContest2 />} />
                 <Route path="/verify" element={<VerifyEmail />} />
+                <Route path="/profile/edit" element={<EditProfile />} />
               </Routes>
               <Footer />
             </div>
