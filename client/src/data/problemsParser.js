@@ -1,5 +1,25 @@
 import codeforcesService from "./codeforcesService";
 
+const shuffleArray = async (array) => {
+  let currentIndex = 0,
+    length = array.length;
+
+  // While there remain elements to shuffle.
+  while (currentIndex < array.length && currentIndex < 1000) {
+    // Pick a remaining element.
+    let randomIndex = Math.floor(Math.random() * length) % length;
+
+    // And swap it with the current element.
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex],
+      array[currentIndex],
+    ];
+    currentIndex++;
+  }
+
+  return array;
+};
+
 const getSolvedProblemsByAllUsers = async (handles) => {
   const solvedProblems = new Set();
   for (const handle of handles) {
@@ -40,6 +60,7 @@ const getUnsolvedProblemsWithRating = async (handles, requirements) => {
   if (allProblems.length === 0) {
     return { status: "FAILED", error: "Unable to fetch problems." };
   }
+  await shuffleArray(allProblems);
   const problems = {};
   for (const rating of Object.keys(requirements)) problems[rating] = [];
   for (const problem of allProblems) {
