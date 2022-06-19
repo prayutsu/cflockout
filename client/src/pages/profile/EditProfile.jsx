@@ -1,4 +1,18 @@
+import { useState } from "react";
+import { useSelector } from "react-redux";
+import PleaseLoginToView from "../../components/PleaseLoginToView";
+
 const ProfilePage = () => {
+  const {user, isSuccess, isLoading, isError} = useSelector((state) => state.auth);
+  const [formData, setFormData] = useState({
+    name: user ? user.name : "",
+    email: user ? user.email : "",
+    username: user ? user.username : "",    
+  });
+  if(!user) {
+    return <PleaseLoginToView/>;
+  }
+
   return (
     <div className="h-full w-full md:p-16">
       <div className="bg-gray-100 p-8 rounded-md">
@@ -36,19 +50,41 @@ const ProfilePage = () => {
               <div className="shadow rounded-md overflow-hidden">
                 <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
                   <div className="grid grid-cols-4 gap-6">
+
+                  <div className="col-span-4 sm:col-span-3">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  disabled={true}
+                  required
+                  autoComplete="email-address"
+                  value={user.email}
+                  className="mt-1 text-gray-500 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
+                />
+              </div>
+
+
                     <div className="col-span-4 sm:col-span-2">
                       <label
-                        htmlFor="first-name"
+                        htmlFor="name"
                         className="block text-sm font-medium text-gray-700"
                       >
                         Name
                       </label>
                       <input
                         type="text"
-                        name="first-name"
-                        id="first-name"
-                        autoComplete="given-name"
-                        value="afldjfdsa"
+                        name="name"
+                        id="name"
+                        autoComplete="name"
+                        defaultValue={user.name}
+                        value={formData.name}
                         className="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       />
                     </div>
