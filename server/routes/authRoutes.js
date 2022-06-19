@@ -4,7 +4,11 @@ const {
   registerUser,
   loginUser,
   verifyUser,
+  sendResetPasswordLink,
+  resetPassword,
+  verifyPasswordResetToken,
 } = require("../controllers/authController");
+const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 
 router.post(
@@ -12,7 +16,9 @@ router.post(
   [
     body("name", "Name can not be empty.").isLength({ min: 1 }),
     body("email", "Email can not be empty.").isLength({ min: 1 }).isEmail(),
-    body("password", "Password can not be empty.").isLength({ min: 1 }),
+    body("password", "Password can not be less than 4 characters.").isLength({
+      min: 4,
+    }),
     body("username", "Username can not be empty").isLength({ min: 1 }),
   ],
   registerUser
@@ -25,6 +31,31 @@ router.post(
     body("password", "Password can not be empty.").isLength({ min: 1 }),
   ],
   loginUser
+);
+
+// router
+//   .route("/send-reset-password-link")
+//   .post(
+//     [body("email", "Email can not be empty.").isLength({ min: 1 }).isEmail()],
+//     sendResetPasswordLink
+//   );
+router.post(
+  "/send-reset-password-link",
+  [body("email", "Email can not be empty.").isLength({ min: 1 }).isEmail()],
+  sendResetPasswordLink
+);
+
+router.post("/verify-reset-password-token/:token", verifyPasswordResetToken);
+
+router.put(
+  "/reset-password",
+  [
+    body("password", "Password can not be less than 4 characters.").isLength({
+      min: 4,
+    }),
+  ],
+  protect,
+  resetPassword
 );
 
 router.put("/verify/:token", verifyUser);

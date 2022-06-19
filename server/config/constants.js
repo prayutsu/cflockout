@@ -8,6 +8,13 @@ const MAX_PLAYERS = 6;
 const MAX_PROBLEM_RATING = 2500;
 const MIN_PROBLEM_RATING = 800;
 const CF_API_URL = "https://codeforces.com/api";
+const REDIRECT_URI = "https://developers.google.com/oauthplayground";
+const VERIFY_EMAIL = "VERIFY_EMAIL";
+const RESET_PASSWORD = "RESET_PASSWORD";
+const CLIENT_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://cflockout.live"
+    : "http://localhost:3000";
 
 module.exports = {
   MIN_DURATION,
@@ -20,4 +27,8 @@ module.exports = {
   MIN_PROBLEM_RATING,
   MAX_PROBLEM_RATING,
   CF_API_URL,
+  REDIRECT_URI,
+  VERIFY_EMAIL,
+  RESET_PASSWORD,
+  CLIENT_URL,
 };

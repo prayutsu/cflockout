@@ -7,19 +7,48 @@ const { validationResult } = require("express-validator");
 const axios = require("axios");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
-
-const REDIRECT_URI = "https://developers.google.com/oauthplayground";
+const {
+  REDIRECT_URI,
+  CLIENT_URL,
+  RESET_PASSWORD,
+  VERIFY_EMAIL,
+} = require("../config/constants");
 
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
   REDIRECT_URI
 );
+
 oauth2Client.setCredentials({
   refresh_token: process.env.CFLOCKOUT_REFRESH_TOKEN,
 });
 
-const sendMail = async (user) => {
+const getVerifyMailOptions = (user, emailToken) => {
+  const url = `${CLIENT_URL}/verify?token=${emailToken}`;
+  return {
+    from: process.env.CFLOCKOUT_EMAIL_ID,
+    to: user.email,
+    subject: "Verify your account",
+    secure: true,
+    text: `Hi ${user.name},\n\nNote: If this mail appears in spam folder, make sure to report it not phishing to be able to click the link.\nPlease click the below link to verify your email.\n${url}`,
+    html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to verify your email.<br> <a href="${url}">Click here to verify</a></h3>`,
+  };
+};
+
+const getResetPasswordMailOptions = (user, emailToken) => {
+  const url = `${CLIENT_URL}/auth/verify/reset-password-token?token=${emailToken}`;
+  return {
+    from: process.env.CFLOCKOUT_EMAIL_ID,
+    to: user.email,
+    subject: "Reset your password",
+    secure: true,
+    text: `Hi ${user.name},\n\nNote: If this mail appears in spam folder, make sure to report it not phishing to be able to click the link.\nPlease click the below link to reset your password.\n${url}`,
+    html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to reset your password.<br> <a href="${url}">Click here to reset</a></h3>`,
+  };
+};
+
+const sendMail = async (user, mailType) => {
   const accessToken = oauth2Client.getAccessToken();
 
   const transporter = nodemailer.createTransport({
@@ -41,31 +70,20 @@ const sendMail = async (user) => {
       expiresIn: "1d",
     },
     (err, emailToken) => {
-      console.log("JWT Token", emailToken);
-      const url = `${clientUrl}/verify/?token=${emailToken}`;
-      const mailOptions = {
-        from: process.env.CFLOCKOUT_EMAIL_ID,
-        to: user.email,
-        subject: "Verify your account",
-        secure: true,
-        text: `Hi ${user.name},\n\nNote: If this mail appears in spam folder, make sure to report it not phishing to be able to click the link.\nPlease click the below link to verify your email.\n${url}`,
-        html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to verify your email.<br> <a href="${url}">Click here to verify</a></h3>`,
-      };
+      const mailOptions =
+        mailType === VERIFY_EMAIL
+          ? getVerifyMailOptions(user, emailToken)
+          : getResetPasswordMailOptions(user, emailToken);
       transporter.sendMail(mailOptions);
       console.log(`Email sent to ${user.email}`);
     }
   );
 };
 
-const clientUrl =
-  process.env.NODE_ENV === "production"
-    ? "https://cflockout.live"
-    : "http://localhost:3000";
-
 const registerUser = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    throw new Error(errors.array()[0].msg);
   }
   const { name, email, password, username } = req.body;
 
@@ -118,7 +136,7 @@ const registerUser = asyncHandler(async (req, res) => {
 const loginUser = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    throw new Error(errors.array()[0].msg);
   }
 
   const { email, password } = req.body;
@@ -143,6 +161,78 @@ const loginUser = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Invalid credentials.");
   }
+});
+
+const sendResetPasswordLink = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new Error(errors.array()[0].msg);
+  }
+  console.log(req.body);
+  const email = req.body.email;
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new Error(`User not found with this email ${email}.`);
+  }
+  sendMail(user, RESET_PASSWORD);
+  res.status(200).json({
+    success: true,
+    message: "Reset password link sent to your email.",
+  });
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new Error(errors.array()[0].msg);
+  }
+  const { password } = req.body;
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new Error("User not found with the given id.");
+  }
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  user.password = hashedPassword;
+
+  await user.save();
+  res.status(200).json({
+    success: true,
+    message: "Password updated successfully.",
+  });
+});
+
+const updateProfile = asyncHandler(async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    throw new Error(errors.array()[0].msg);
+  }
+  const { name, username } = req.body;
+});
+
+const verifyPasswordResetToken = asyncHandler(async (req, res) => {
+  if (!req.params.token) {
+    throw new Error("Verification token not present.");
+  }
+  console.log(req.params.token);
+  const data = jwt.verify(req.params.token, process.env.JWT_SECRET);
+  const { id } = data;
+  const user = await User.findById(id);
+  if (!user) {
+    throw new Error("This email is not registered.");
+  }
+  await user.save();
+  res.status(200).json({
+    success: true,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      username: user.username,
+      verified: user.verified,
+      token: generateToken(user._id),
+    },
+  });
 });
 
 const verifyUser = asyncHandler(async (req, res) => {
@@ -199,4 +289,12 @@ const generateToken = (id, expirationTime = "30d") => {
   });
 };
 
-module.exports = { registerUser, loginUser, verifyUser };
+module.exports = {
+  registerUser,
+  updateProfile,
+  resetPassword,
+  loginUser,
+  verifyUser,
+  sendResetPasswordLink,
+  verifyPasswordResetToken,
+};

@@ -27,6 +27,41 @@ const verify = async (token) => {
   return response.data;
 };
 
+// Verify reset password token.
+const verifyResetPasswordToken = async (token) => {
+  const response = await axios.post(
+    `${AUTH_API_URL}/verify-reset-password-token/${token}`
+  );
+  if (response.data.success) {
+    localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
+  }
+  return response.data;
+};
+
+// Send reset-password link.
+const sendResetPasswordLink = async (email) => {
+  const response = await axios.post(
+    `${AUTH_API_URL}/send-reset-password-link`,
+    { email }
+  );
+  return response.data;
+};
+
+// Reset Password.
+const resetPassword = async (token, password) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.put(
+    `${AUTH_API_URL}/reset-password`,
+    { password },
+    config
+  );
+  return response.data;
+};
+
 // Logout user
 const logout = () => {
   localStorage.removeItem(USER_KEY);
@@ -36,7 +71,10 @@ const authService = {
   register,
   logout,
   login,
+  sendResetPasswordLink,
   verify,
+  resetPassword,
+  verifyResetPasswordToken,
 };
 
 export default authService;

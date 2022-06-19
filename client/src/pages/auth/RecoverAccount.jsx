@@ -1,8 +1,69 @@
 import { MailIcon } from "@heroicons/react/solid";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import AlreadyLoggedIn from "../../components/AlreadyLoggedIn";
 import { ReactComponent as CflockoutLogo } from "../../components/assets/cflockout-logo-icon.svg";
+import { reset, resetIsSucess, sendResetPasswordLink } from "../../features/auth/authSlice";
+import { toggleHeaderBanner } from "../../features/nav/navSlice";
 
 const RecoverAccount = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const { user, isSuccess, isError, message, isLoading } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    if (isSuccess) {
+      // reset user and navigate to '/'
+      const resetState = new Promise((resolve, _) => {
+        dispatch(resetIsSucess());
+        resolve();
+      });
+
+      resetState.then(() => {
+        dispatch(toggleHeaderBanner());
+        toast.warn(
+          "If the mail is in spam, don't forget to report it `not phishing` to be able to see the verification link!",
+          { autoClose: 10000 }
+        );
+        navigate("/", {
+          replace: true,
+        });
+      });
+    }
+    if (isError) {
+      toast.error(message);
+      dispatch(reset());
+    }
+  }, [isSuccess, isError, message, dispatch, navigate]);
+
+  const onChange = (event) => {
+    setFormData((previousState) => ({
+      ...previousState,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (document.getElementById("signin-form").reportValidity()) {
+      dispatch(sendResetPasswordLink(formData.email));
+    }
+  };
+
+  if (user) {
+    return <AlreadyLoggedIn />;
+  }
+
   return (
     <div className="h-full py-8 px-4 md:p-8">
       <div className="min-h-full flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -41,9 +102,9 @@ const RecoverAccount = () => {
                   id="email"
                   required
                   autoComplete="email-address"
-                  //   value={formData.email}
+                  value={formData.email}
                   placeholder="you@example.com"
-                  //   onChange={onChange}
+                  onChange={onChange}
                   className="mt-1 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
                 />
               </div>
@@ -51,11 +112,11 @@ const RecoverAccount = () => {
 
             <div>
               <button
-                // onClick={handleSubmit}
+                onClick={handleSubmit}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
               >
                 <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                  {false ? (
+                  {isLoading ? (
                     <svg
                       className="animate-spin -ml-1 mr-3 h-5 w-5 text-cyan-500 group-hover:text-cyan-400"
                       xmlns="http://www.w3.org/2000/svg"

@@ -48,9 +48,7 @@ const getOngoingContest = asyncHandler(async (req, res) => {
 const createContest = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res
-      .status(400)
-      .json({ success: false, error: errors.array()[0].msg });
+    throw new Error(errors.array()[0].msg);
   }
   const { duration, problems } = req.body;
 
@@ -154,7 +152,7 @@ const joinContest = asyncHandler(async (req, res) => {
 const solveProblem = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    throw new Error(errors.array()[0].msg);
   }
 
   const isValid = types.ObjectId.isValid(req.params.contestId);
@@ -220,7 +218,7 @@ const solveProblem = asyncHandler(async (req, res) => {
 const startContest = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
+    throw new Error(errors.array()[0].msg);
   }
   const { problems } = req.body;
 

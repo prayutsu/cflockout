@@ -10,6 +10,7 @@ const initialState = {
   isError: false,
   isSuccess: false,
   isLoading: false,
+  passwordResetSuccess: false,
   message: "",
 };
 
@@ -70,6 +71,66 @@ export const verify = createAsyncThunk(
   }
 );
 
+// Verify reset password token.
+export const verifyResetPasswordToken = createAsyncThunk(
+  "auth/verifyResetPasswordToken",
+  async (token, thunkAPI) => {
+    try {
+      const res = await authService.verifyResetPasswordToken(token);
+      if (res.success) {
+        return thunkAPI.fulfillWithValue(res.user);
+      }
+      return thunkAPI.rejectWithValue(res.error);
+    } catch (error) {
+      const message =
+        error.response && error.response.data && error.response.data.error
+          ? error.response.data.error
+          : error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+// Send reset password link
+export const sendResetPasswordLink = createAsyncThunk(
+  "auth/send-reset-password-link",
+  async (email, thunkAPI) => {
+    try {
+      const res = await authService.sendResetPasswordLink(email);
+      if (res.success) {
+        return thunkAPI.fulfillWithValue(res.message);
+      }
+      return thunkAPI.rejectWithValue(res.error);
+    } catch (error) {
+      const message =
+        error.response && error.response.data && error.response.data.error
+          ? error.response.data.error
+          : error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "auth/reset-password",
+  async (password, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const res = await authService.resetPassword(token, password);
+      if (res.success) {
+        return thunkAPI.fulfillWithValue(res.message);
+      }
+      return thunkAPI.rejectWithValue(res.error);
+    } catch (error) {
+      const message =
+        error.response && error.response.data && error.response.data.error
+          ? error.response.data.error
+          : error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 // Log out user
 export const logout = createAsyncThunk("auth/logout", () => {
   authService.logout();
@@ -84,6 +145,7 @@ export const authSlice = createSlice({
       state.isError = false;
       state.isSuccess = false;
       state.message = "";
+      state.passwordResetSuccess = false;
     },
     resetIsSucess: (state) => {
       state.isSuccess = false;
@@ -134,6 +196,48 @@ export const authSlice = createSlice({
         state.isError = true;
         state.message = action.payload;
         state.user = null;
+      })
+      .addCase(sendResetPasswordLink.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(sendResetPasswordLink.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+      })
+      .addCase(sendResetPasswordLink.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.user = null;
+      })
+      .addCase(resetPassword.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.passwordResetSuccess = true;
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.message = action.payload;
+        state.passwordResetSuccess = false;
+      })
+      .addCase(verifyResetPasswordToken.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(verifyResetPasswordToken.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(verifyResetPasswordToken.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.payload;
       });
   },
 });

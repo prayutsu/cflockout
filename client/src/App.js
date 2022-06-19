@@ -17,6 +17,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import EditProfile from "./pages/profile/EditProfile";
 import RecoverAccount from "./pages/auth/RecoverAccount";
 import ResetPassword from "./pages/auth/ResetPassword";
+import VerifyResetPasswordToken from "./pages/auth/VerifyResetPasswordToken";
 
 function App() {
   return (
@@ -31,8 +32,16 @@ function App() {
                 <Route path="/auth/login" element={<Login />} />
                 <Route path="/auth/signup" element={<Signup />} />
                 <Route
+                  path="/auth/verify/reset-password-token"
+                  element={<VerifyResetPasswordToken />}
+                />
+                <Route
                   path="/auth/recoverAccount"
                   element={<RecoverAccount />}
+                />
+                <Route
+                  path="/auth/reset-password"
+                  element={<ResetPassword />}
                 />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/contests/create" element={<CreateContest />} />
@@ -40,8 +49,6 @@ function App() {
                 <Route path="/contests/live" element={<LiveContest2 />} />
                 <Route path="/verify" element={<VerifyEmail />} />
                 <Route path="/profile/edit" element={<EditProfile />} />
-                {/* Delete this route */}
-                <Route path="/password" element={<ResetPassword />} />
               </Routes>
               <Footer />
             </div>

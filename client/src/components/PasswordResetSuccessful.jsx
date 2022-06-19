@@ -12,7 +12,7 @@ const PasswordResetSuccessful = () => {
             {/* Content */}
             <div className="flex flex-1 flex-col items-center">
               <h1 className="text-2xl text-center font-semibold tracking-wide">
-                Password reset successful, please login to continue!
+                Password reset successful!
               </h1>
             </div>
           </div>
