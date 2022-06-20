@@ -1,12 +1,15 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import authService from "./authService";
 import { USER_KEY } from "../../config/constants";
+import { storage } from "../../config/firebase";
+import { ref, getDownloadURL } from "firebase/storage";
 
 // Get user from localStorage.
 const user = JSON.parse(localStorage.getItem(USER_KEY));
 
 const initialState = {
   user: user ? user : null,
+  imageUrl: "",
   isError: false,
   isSuccess: false,
   isLoading: false,
@@ -153,6 +156,23 @@ export const updateProfile = createAsyncThunk(
   }
 );
 
+export const getProfileImageUrl = createAsyncThunk(
+  "auth/get-profile-image-url",
+  async (userId, thunkAPI) => {
+    const url = await getDownloadURL(ref(storage, `images/${userId}`))
+      .then((url) => {
+        // "Here";
+        // console.log(url);
+        return url;
+      })
+      .catch((error) => {
+        return "";
+      });
+
+    return thunkAPI.fulfillWithValue(url);
+  }
+);
+
 // Log out user
 export const logout = createAsyncThunk("auth/logout", () => {
   authService.logout();
@@ -168,6 +188,8 @@ export const authSlice = createSlice({
       state.isSuccess = false;
       state.message = "";
       state.passwordResetSuccess = false;
+      state.profileUpdateSuccess = false;
+      state.imageUrl = "";
     },
     resetIsSucess: (state) => {
       state.isSuccess = false;
@@ -277,6 +299,15 @@ export const authSlice = createSlice({
         state.isSuccess = false;
         state.profileUpdateSuccess = false;
         state.message = action.payload;
+      })
+      .addCase(getProfileImageUrl.pending, (state, acton) => {
+        state.imageUrl = "";
+      })
+      .addCase(getProfileImageUrl.rejected, (state, action) => {
+        state.imageUrl = "";
+      })
+      .addCase(getProfileImageUrl.fulfilled, (state, action) => {
+        state.imageUrl = action.payload;
       });
   },
 });

@@ -4,11 +4,11 @@ import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { AiOutlineGithub } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../features/auth/authSlice";
+import { getProfileImageUrl, logout } from "../features/auth/authSlice";
 import { changeIndex } from "../features/nav/navSlice";
 import { ReactComponent as CflockoutLogo } from "./assets/new-cflockout-logo.svg";
 import { ReactComponent as CflockoutIconLogo } from "./assets/cflockout-logo-icon.svg";
-import { ReactComponent as ProfileAvatar } from "./assets/profile-avatar.svg";
+import Avatar from "./Avatar";
 
 const navigation = [
   { name: "Home", route: "/", index: 0 },
@@ -26,7 +26,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user } = useSelector((state) => state.auth);
+  const { user, imageUrl } = useSelector((state) => state.auth);
   const { selectedIndex } = useSelector((state) => state.nav);
   const dispatch = useDispatch();
 
@@ -36,13 +36,22 @@ export default function Navbar() {
   else if (location.pathname === "/create") selectedItemIndex = 2;
   else if (location.pathname === "/join") selectedItemIndex = 3;
   else if (location.pathname.includes("/live")) selectedItemIndex = 4;
-  else if (location.pathname === "/auth/login" || location.pathname === "/auth/signup")
+  else if (
+    location.pathname === "/auth/login" ||
+    location.pathname === "/auth/signup"
+  )
     selectedItemIndex = 5;
   else selectedItemIndex = 6;
 
   useEffect(() => {
     dispatch(changeIndex(selectedItemIndex));
   }, [dispatch, selectedItemIndex]);
+
+  useEffect(() => {
+    if (user) {
+      dispatch(getProfileImageUrl(user._id));
+    }
+  }, []); // eslint-disable-line
 
   const handleLogout = (e) => {
     e.preventDefault();
@@ -126,17 +135,16 @@ export default function Navbar() {
                       <Menu.Button className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
                         <span className="sr-only">Open user menu</span>
                         <span className="h-8 w-8 rounded-full border-[1px] border-black">
-                        {!user.imageUrl || user.imageUrl === "" ? (
-                        <ProfileAvatar className="h-full w-full"/>
-                      ) : (
-                        <img
-                          src={user.imageUrl}
-                          alt="avatar"
-                          className="w-full h-full"
-                        />
-                      )}
+                          {imageUrl === "" ? (
+                            <Avatar className="h-full w-full" />
+                          ) : (
+                            <img
+                              src={imageUrl}
+                              alt="avatar"
+                              className="w-full h-full rounded-full"
+                            />
+                          )}
                         </span>
-
 
                         {/* <img
                           className="h-8 w-8 rounded-full"

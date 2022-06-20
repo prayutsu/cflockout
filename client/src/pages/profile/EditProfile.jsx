@@ -2,16 +2,27 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import PleaseLoginToView from "../../components/PleaseLoginToView";
-import { reset, updateProfile } from "../../features/auth/authSlice";
+import {
+  getProfileImageUrl,
+  reset,
+  updateProfile,
+} from "../../features/auth/authSlice";
 import { checkCfUsername } from "../../utils/codeforcesHelper";
-import {ReactComponent as ProfileAvatar} from '../../components/assets/profile-avatar.svg';
+import { deleteObject, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../config/firebase";
+import { PhotographIcon } from "@heroicons/react/solid";
+import { SaveIcon } from "@heroicons/react/solid";
+import { TrashIcon } from "@heroicons/react/solid";
+import Avatar from "../../components/Avatar";
 
 const ProfilePage = () => {
-  const { user, profileUpdateSuccess, isLoading, isError, message } =
+  const { user, imageUrl, profileUpdateSuccess, isLoading, isError, message } =
     useSelector((state) => state.auth);
 
   const dispatch = useDispatch();
 
+  const [imageUploadLoading, setImageUploadLoading] = useState(false);
+  const [imageDeleteLoading, setImageDeleteLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isImageUploaded, setIsImageUploaded] = useState(false);
 
@@ -23,6 +34,7 @@ const ProfilePage = () => {
   useEffect(() => {
     if (profileUpdateSuccess) {
       toast.success("Profile updated successfully");
+      dispatch(reset());
     }
     if (isError) {
       toast.error(message);
@@ -57,8 +69,43 @@ const ProfilePage = () => {
 
   const handleUpdateProfilePhoto = (event) => {
     event.preventDefault();
-    if (document.getElementById("profile-photo-form").reportValidity()) {
+    if (selectedImage) {
+      const storageRef = ref(storage, `images/${user._id}`);
+      setImageUploadLoading(true);
+      uploadBytes(storageRef, selectedImage)
+        .then((snapshot) => {
+          const url = snapshot.downloadURL;
+          console.log(url);
+          console.log("Uplaoded successfully!!");
+          setImageUploadLoading(false);
+          toast.success("Profile photo updated successfully");
+          dispatch(getProfileImageUrl(user._id));
+        })
+        .catch((err) => {
+          console.log(err);
+          setImageUploadLoading(false);
+          toast.error("An error occurred while updating profile photo");
+        });
+    } else {
+      toast.error("Please select an image");
+      setImageUploadLoading(false);
     }
+  };
+
+  const handleDeleteProfilePhoto = (event) => {
+    event.preventDefault();
+    const storageRef = ref(storage, `images/${user._id}`);
+    setImageDeleteLoading(true);
+    deleteObject(storageRef)
+      .then(() => {
+        toast.success("Profile photo deleted successfully");
+        setImageDeleteLoading(false);
+        dispatch(getProfileImageUrl(user._id));
+      })
+      .catch((err) => {
+        toast.error(err.message);
+        setImageDeleteLoading(false);
+      });
   };
 
   const handleImageUpload = (e) => {
@@ -70,6 +117,8 @@ const ProfilePage = () => {
           e.target.files[0].type === "image/png")
       ) {
         setSelectedImage(e.target.files[0]);
+        console.log(e.target.files[0]);
+        console.log(typeof e.target.files[0]);
         setIsImageUploaded(true);
       } else {
         toast.error(
@@ -101,18 +150,55 @@ const ProfilePage = () => {
                 <div className="flex flex-col">
                   <div className="mt-1 flex w-full justify-center items-center">
                     {/* Image */}
-                    <span className="mx-4 inline-block rounded-full overflow-hidden border-gray-400 border-2">
-                    {!user.imageUrl || user.imageUrl === "" ? (
-                        <ProfileAvatar className='h-full w-full' />
+                    <div className="w-full aspect-square max-w-[220px] md:max-w-full">
+                      {/* <span className="w-full aspect-square inline-block rounded-full overflow-hidden border-gray-800 border-2"> */}
+                      {imageUrl === "" ? (
+                        <Avatar className="h-full w-full rounded-full text-gray-400" />
                       ) : (
                         <img
-                          src={user.imageUrl}
+                          src={imageUrl}
                           alt="avatar"
-                          className="w-full h-full"
+                          className="w-full h-full aspect-square rounded-full"
+                        />
+                      )}
+                      {/* </span> */}
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleDeleteProfilePhoto}
+                    className="mt-4 group relative bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                  >
+                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                      {imageDeleteLoading ? (
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500 group-hover:text-gray-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth={4}
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        <TrashIcon
+                          className="h-5 w-5 text-gray-500 group-hover:text-gray-400"
+                          aria-hidden="true"
                         />
                       )}
                     </span>
-                  </div>
+                    Remove Photo
+                  </button>
                 </div>
               </div>
             </div>
@@ -180,8 +266,37 @@ const ProfilePage = () => {
                 <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                   <button
                     onClick={handleUpdateProfile}
-                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                    className="inline-flex relative pl-10 justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
                   >
+                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                      {isLoading ? (
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-cyan-500 group-hover:text-cyan-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth={4}
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        <SaveIcon
+                          className="h-5 w-5 text-cyan-500 group-hover:text-cyan-400"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
                     Save
                   </button>
                 </div>
@@ -224,9 +339,6 @@ const ProfilePage = () => {
                               onChange={handleImageUpload}
                             />
                           </label>
-                          {/* <p className="pl-1">
-                            {isImageUploaded ? "" : "or drag and drop"}
-                          </p> */}
                         </div>
                         <p className="text-xs text-gray-500">
                           {isImageUploaded ? "" : "PNG, JPG up to 1MB"}
@@ -239,9 +351,38 @@ const ProfilePage = () => {
                 <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                   <button
                     onClick={handleUpdateProfilePhoto}
-                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                    className="inline-flex relative pl-10 justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
                   >
-                    Change Photo
+                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                      {imageUploadLoading ? (
+                        <svg
+                          className="animate-spin -ml-1 mr-3 h-5 w-5 text-cyan-500 group-hover:text-cyan-400"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth={4}
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        <PhotographIcon
+                          className="h-5 w-5 text-cyan-500 group-hover:text-cyan-400"
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
+                    Save
                   </button>
                 </div>
               </div>
