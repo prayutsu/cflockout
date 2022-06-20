@@ -62,6 +62,20 @@ const resetPassword = async (token, password) => {
   return response.data;
 };
 
+// Update user profile.
+const updateProfile = async (token, userData) => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.put(`${AUTH_API_URL}/profile`, userData, config);
+  if (response.data.success) {
+    localStorage.setItem(USER_KEY, JSON.stringify(response.data.user));
+  }
+  return response.data;
+};
+
 // Logout user
 const logout = () => {
   localStorage.removeItem(USER_KEY);
@@ -75,6 +89,7 @@ const authService = {
   verify,
   resetPassword,
   verifyResetPasswordToken,
+  updateProfile,
 };
 
 export default authService;

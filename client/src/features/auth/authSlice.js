@@ -11,6 +11,7 @@ const initialState = {
   isSuccess: false,
   isLoading: false,
   passwordResetSuccess: false,
+  profileUpdateSuccess: false,
   message: "",
 };
 
@@ -131,6 +132,27 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+// Update user profile.
+export const updateProfile = createAsyncThunk(
+  "auth/update-profile",
+  async (data, thunkAPI) => {
+    try {
+      const token = thunkAPI.getState().auth.user.token;
+      const res = await authService.updateProfile(token, data);
+      if (res.success) {
+        return thunkAPI.fulfillWithValue(res.user);
+      }
+      return thunkAPI.rejectWithValue(res.error);
+    } catch (error) {
+      const message =
+        error.response && error.response.data && error.response.data.error
+          ? error.response.data.error
+          : error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 // Log out user
 export const logout = createAsyncThunk("auth/logout", () => {
   authService.logout();
@@ -237,6 +259,23 @@ export const authSlice = createSlice({
         state.isLoading = false;
         state.isError = true;
         state.isSuccess = false;
+        state.message = action.payload;
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateProfile.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isError = false;
+        state.isSuccess = true;
+        state.profileUpdateSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.isSuccess = false;
+        state.profileUpdateSuccess = false;
         state.message = action.payload;
       });
   },

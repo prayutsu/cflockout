@@ -7,6 +7,7 @@ const {
   sendResetPasswordLink,
   resetPassword,
   verifyPasswordResetToken,
+  updateProfile,
 } = require("../controllers/authController");
 const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
@@ -33,12 +34,16 @@ router.post(
   loginUser
 );
 
-// router
-//   .route("/send-reset-password-link")
-//   .post(
-//     [body("email", "Email can not be empty.").isLength({ min: 1 }).isEmail()],
-//     sendResetPasswordLink
-//   );
+router.put(
+  "/profile",
+  [
+    body("name", "Name can not be empty.").isLength({ min: 1 }),
+    body("username", "Username can not be empty").isLength({ min: 1 }),
+  ],
+  protect,
+  updateProfile
+);
+
 router.post(
   "/send-reset-password-link",
   [body("email", "Email can not be empty.").isLength({ min: 1 }).isEmail()],

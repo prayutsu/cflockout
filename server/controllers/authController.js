@@ -208,6 +208,24 @@ const updateProfile = asyncHandler(async (req, res) => {
     throw new Error(errors.array()[0].msg);
   }
   const { name, username } = req.body;
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    throw new Error("User not found with the given id.");
+  }
+  user.name = name;
+  user.username = username;
+  await user.save();
+  res.status(200).json({
+    success: true,
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      username: user.username,
+      verified: user.verified,
+      token: generateToken(user._id),
+    },
+  });
 });
 
 const verifyPasswordResetToken = asyncHandler(async (req, res) => {

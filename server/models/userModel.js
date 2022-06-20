@@ -24,6 +24,10 @@ const userSchema = mongoose.Schema(
       defaultValue: false,
       required: true,
     },
+    imageUrl: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

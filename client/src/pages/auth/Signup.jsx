@@ -7,6 +7,7 @@ import { ReactComponent as CflockoutLogo } from "../../components/assets/cflocko
 import { toast } from "react-toastify";
 import AlreadyLoggedIn from "../../components/AlreadyLoggedIn";
 import { toggleHeaderBanner } from "../../features/nav/navSlice";
+import { checkCfUsername } from "../../utils/codeforcesHelper";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -55,22 +56,6 @@ export default function Signup() {
       [e.target.name]: e.target.value,
     }));
   };
-
-  const checkCfUsername = (cfUsername) =>
-    new Promise(async (resolve, reject) => {
-      try {
-        const response = await fetch(
-          `https://codeforces.com/api/user.info?handles=${cfUsername}`
-        );
-        const data = await response.json();
-        if (data.status === "OK") {
-          resolve();
-        }
-        reject();
-      } catch (error) {
-        reject();
-      }
-    });
 
   const handleSubmit = async (e) => {
     e.preventDefault();

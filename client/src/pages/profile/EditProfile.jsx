@@ -1,16 +1,86 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import PleaseLoginToView from "../../components/PleaseLoginToView";
+import { reset, updateProfile } from "../../features/auth/authSlice";
+import { checkCfUsername } from "../../utils/codeforcesHelper";
+import {ReactComponent as ProfileAvatar} from '../../components/assets/profile-avatar.svg';
 
 const ProfilePage = () => {
-  const {user, isSuccess, isLoading, isError} = useSelector((state) => state.auth);
+  const { user, profileUpdateSuccess, isLoading, isError, message } =
+    useSelector((state) => state.auth);
+
+  const dispatch = useDispatch();
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [isImageUploaded, setIsImageUploaded] = useState(false);
+
   const [formData, setFormData] = useState({
     name: user ? user.name : "",
-    email: user ? user.email : "",
-    username: user ? user.username : "",    
+    username: user ? user.username : "",
   });
-  if(!user) {
-    return <PleaseLoginToView/>;
+
+  useEffect(() => {
+    if (profileUpdateSuccess) {
+      toast.success("Profile updated successfully");
+    }
+    if (isError) {
+      toast.error(message);
+      dispatch(reset());
+    }
+  }, [profileUpdateSuccess, isError, dispatch, message]);
+
+  const onChange = (event) => {
+    setFormData((previousState) => ({
+      ...previousState,
+      [event.target.name]: event.target.value,
+    }));
+  };
+
+  const handleUpdateProfile = (event) => {
+    event.preventDefault();
+    if (document.getElementById("profile-form").reportValidity()) {
+      checkCfUsername(formData.username)
+        .then(() => {
+          const userData = {
+            name: formData.name,
+            username: formData.username,
+          };
+          dispatch(updateProfile(userData));
+        })
+        .catch(() => {
+          toast.error(`CF username - ${formData.username} is invalid!`);
+          dispatch(reset());
+        });
+    }
+  };
+
+  const handleUpdateProfilePhoto = (event) => {
+    event.preventDefault();
+    if (document.getElementById("profile-photo-form").reportValidity()) {
+    }
+  };
+
+  const handleImageUpload = (e) => {
+    console.log(e);
+    if (e.target.files.length > 0) {
+      if (
+        e.target.files[0].size <= 1048576 &&
+        (e.target.files[0].type === "image/jpeg" ||
+          e.target.files[0].type === "image/png")
+      ) {
+        setSelectedImage(e.target.files[0]);
+        setIsImageUploaded(true);
+      } else {
+        toast.error(
+          "Only PNG and JPEG images with size less than 1MB are allowed"
+        );
+      }
+    }
+  };
+
+  if (!user) {
+    return <PleaseLoginToView />;
   }
 
   return (
@@ -31,14 +101,16 @@ const ProfilePage = () => {
                 <div className="flex flex-col">
                   <div className="mt-1 flex w-full justify-center items-center">
                     {/* Image */}
-                    <span className="mx-4 inline-block rounded-full overflow-hidden bg-gray-200">
-                      <svg
-                        className="h-full w-full text-gray-400"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                      </svg>
+                    <span className="mx-4 inline-block rounded-full overflow-hidden border-gray-400 border-2">
+                    {!user.imageUrl || user.imageUrl === "" ? (
+                        <ProfileAvatar className='h-full w-full' />
+                      ) : (
+                        <img
+                          src={user.imageUrl}
+                          alt="avatar"
+                          className="w-full h-full"
+                        />
+                      )}
                     </span>
                   </div>
                 </div>
@@ -46,30 +118,28 @@ const ProfilePage = () => {
             </div>
           </div>
           <div className="mt-5 md:mt-0 md:col-span-2">
-            <form action="#" method="POST">
+            <form id="profile-form">
               <div className="shadow rounded-md overflow-hidden">
                 <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
                   <div className="grid grid-cols-4 gap-6">
-
-                  <div className="col-span-4 sm:col-span-3">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  disabled={true}
-                  required
-                  autoComplete="email-address"
-                  value={user.email}
-                  className="mt-1 text-gray-500 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
-                />
-              </div>
-
+                    <div className="col-span-4 sm:col-span-3">
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        disabled={true}
+                        required
+                        autoComplete="email-address"
+                        value={user.email}
+                        className="mt-1 text-gray-500 block w-full py-2 px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-cyan-500 focus:border-cyan-500 sm:text-sm"
+                      />
+                    </div>
 
                     <div className="col-span-4 sm:col-span-2">
                       <label
@@ -83,8 +153,8 @@ const ProfilePage = () => {
                         name="name"
                         id="name"
                         autoComplete="name"
-                        defaultValue={user.name}
                         value={formData.name}
+                        onChange={onChange}
                         className="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       />
                     </div>
@@ -97,14 +167,25 @@ const ProfilePage = () => {
                       </label>
                       <input
                         type="text"
-                        name="first-name"
-                        id="first-name"
+                        name="username"
+                        id="username"
+                        value={formData.username}
+                        onChange={onChange}
                         autoComplete="given-name"
                         className="mt-1 focus:ring-cyan-500 focus:border-cyan-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
                       />
                     </div>
                   </div>
-
+                </div>
+                <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
+                  <button
+                    onClick={handleUpdateProfile}
+                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
+                  >
+                    Save
+                  </button>
+                </div>
+                <div className="px-4 py-5 bg-white space-y-6 sm:p-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700">
                       Change Profile Photo
@@ -128,54 +209,39 @@ const ProfilePage = () => {
                         <div className="flex text-sm text-gray-600">
                           <label
                             htmlFor="file-upload"
-                            className="relative cursor-pointer bg-white rounded-md font-medium text-cyan-600 hover:text-cyan-500"
+                            className="relative text-center w-full cursor-pointer bg-white rounded-md font-medium text-cyan-600 hover:text-cyan-500"
                           >
-                            <span>Upload a file</span>
+                            <span>
+                              {isImageUploaded
+                                ? `${selectedImage.name}`
+                                : "Upload a file"}
+                            </span>
                             <input
                               id="file-upload"
                               name="file-upload"
                               type="file"
                               className="sr-only"
+                              onChange={handleImageUpload}
                             />
                           </label>
-                          <p className="pl-1">or drag and drop</p>
+                          {/* <p className="pl-1">
+                            {isImageUploaded ? "" : "or drag and drop"}
+                          </p> */}
                         </div>
                         <p className="text-xs text-gray-500">
-                          PNG, JPG, GIF up to 10MB
+                          {isImageUploaded ? "" : "PNG, JPG up to 1MB"}
                         </p>
                       </div>
                     </div>
                   </div>
-
-                  {/* <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                      Photo
-                    </label>
-                    <div className="mt-1 flex items-center">
-                      <span className="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-                        <svg
-                          className="h-full w-full text-gray-300"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-                        </svg>
-                      </span>
-                      <button
-                        type="button"
-                        className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
-                      >
-                        Change
-                      </button>
-                    </div>
-                  </div> */}
                 </div>
+
                 <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
                   <button
-                    type="submit"
+                    onClick={handleUpdateProfilePhoto}
                     className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"
                   >
-                    Save
+                    Change Photo
                   </button>
                 </div>
               </div>
