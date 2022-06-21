@@ -124,6 +124,8 @@ const registerUser = asyncHandler(async (req, res) => {
         name: user.name,
         email: user.email,
         username: user.username,
+        token: generateToken(user._id),
+        verified: user.verified,
       },
     });
   } else {
@@ -153,6 +155,7 @@ const loginUser = asyncHandler(async (req, res) => {
         email: user.email,
         name: user.name,
         verified: user.verified,
+        username: user.username,
         token: generateToken(user._id),
       },
     });
@@ -291,6 +294,7 @@ const verifyUser = asyncHandler(async (req, res) => {
       _id: newUser._id,
       email: newUser.email,
       name: newUser.name,
+      username: newUser.username,
       verified: newUser.verified,
       token: generateToken(newUser._id),
     },
