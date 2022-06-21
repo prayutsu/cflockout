@@ -52,6 +52,7 @@ export default function Login() {
       const userData = { email: formData.email, password: formData.password };
       dispatch(login(userData));
     }
+    event.target.blur();
   };
 
   if (user) {

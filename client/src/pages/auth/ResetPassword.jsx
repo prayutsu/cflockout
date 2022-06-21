@@ -55,6 +55,7 @@ const ResetPassword = () => {
       }
       dispatch(resetPassword(formData.password));
     }
+    event.target.blur();
   };
 
   if (!user) {

@@ -159,17 +159,18 @@ export const updateProfile = createAsyncThunk(
 export const getProfileImageUrl = createAsyncThunk(
   "auth/get-profile-image-url",
   async (userId, thunkAPI) => {
-    const url = await getDownloadURL(ref(storage, `images/${userId}`))
-      .then((url) => {
-        // "Here";
-        // console.log(url);
-        return url;
-      })
-      .catch((error) => {
-        return "";
-      });
-
-    return thunkAPI.fulfillWithValue(url);
+    try {
+      const url = await getDownloadURL(ref(storage, `images/${userId}`))
+        .then((url) => {
+          return url;
+        })
+        .catch((error) => {
+          return "";
+        });
+      return thunkAPI.fulfillWithValue(url);
+    } catch (error) {
+      return thunkAPI.fulfillWithValue("");
+    }
   }
 );
 

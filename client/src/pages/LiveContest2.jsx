@@ -66,15 +66,18 @@ const LiveContest2 = ({ liveContestState, userState }) => {
     }
   }, [isError, message, dispatch]);
 
-  const handleLeaveContest = async () => {
+  const handleLeaveContest = async (event) => {
+    event.preventDefault();
     const contestId = liveContest._id;
     dispatch(leaveContest(contestId)).then(() => {
       socket.emit("leaveContest", contestId);
       navigate("/", { replace: true });
     });
+    event.target.blur();
   };
 
-  const handleStartContest = async () => {
+  const handleStartContest = async (event) => {
+    event.preventDefault();
     setLoading(true);
     const handles = [];
     const requirements = {};
@@ -120,6 +123,7 @@ const LiveContest2 = ({ liveContestState, userState }) => {
       );
       setLoading(false);
     }
+    event.target.blur();
   };
 
   const updateRankList = async () => {

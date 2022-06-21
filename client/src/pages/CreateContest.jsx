@@ -39,7 +39,6 @@ const CreateContest = () => {
     useSelector((state) => state.contest);
 
   useEffect(() => {
-    console.log("useEffect is running in create");
     dispatch(changeIndex(2));
   }, []); // eslint-disable-line
 
@@ -114,6 +113,7 @@ const CreateContest = () => {
         })
       );
     }
+    event.target.blur();
   };
 
   if (!user) {

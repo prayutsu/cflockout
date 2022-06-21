@@ -27,6 +27,7 @@ const JoinContest = () => {
     if (document.getElementById("join-contest-form").reportValidity()) {
       dispatch(joinContest(contestId));
     }
+    e.target.blur();
   };
 
   useEffect(() => {

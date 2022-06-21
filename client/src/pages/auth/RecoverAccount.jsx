@@ -58,6 +58,7 @@ const RecoverAccount = () => {
     if (document.getElementById("signin-form").reportValidity()) {
       dispatch(sendResetPasswordLink(formData.email));
     }
+    event.target.blur();
   };
 
   if (user) {

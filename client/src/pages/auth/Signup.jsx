@@ -80,6 +80,7 @@ export default function Signup() {
           });
       }
     }
+    e.target.blur();
   };
 
   if (user) {

@@ -49,10 +49,10 @@ const ProfilePage = () => {
     }));
   };
 
-  const handleUpdateProfile = (event) => {
+  const handleUpdateProfile = async (event) => {
     event.preventDefault();
     if (document.getElementById("profile-form").reportValidity()) {
-      checkCfUsername(formData.username)
+      await checkCfUsername(formData.username)
         .then(() => {
           const userData = {
             name: formData.name,
@@ -64,21 +64,20 @@ const ProfilePage = () => {
           toast.error(`CF username - ${formData.username} is invalid!`);
           dispatch(reset());
         });
+      event.target.blur();
     }
   };
 
-  const handleUpdateProfilePhoto = (event) => {
+  const handleUpdateProfilePhoto = async (event) => {
     event.preventDefault();
     if (selectedImage) {
       const storageRef = ref(storage, `images/${user._id}`);
       setImageUploadLoading(true);
-      uploadBytes(storageRef, selectedImage)
+      await uploadBytes(storageRef, selectedImage)
         .then((snapshot) => {
           const url = snapshot.downloadURL;
           console.log(url);
-          console.log("Uplaoded successfully!!");
           setImageUploadLoading(false);
-          toast.success("Profile photo updated successfully");
           dispatch(getProfileImageUrl(user._id));
         })
         .catch((err) => {
@@ -90,13 +89,14 @@ const ProfilePage = () => {
       toast.error("Please select an image");
       setImageUploadLoading(false);
     }
+    event.target.blur();
   };
 
-  const handleDeleteProfilePhoto = (event) => {
+  const handleDeleteProfilePhoto = async (event) => {
     event.preventDefault();
     const storageRef = ref(storage, `images/${user._id}`);
     setImageDeleteLoading(true);
-    deleteObject(storageRef)
+    await deleteObject(storageRef)
       .then(() => {
         toast.success("Profile photo deleted successfully");
         setImageDeleteLoading(false);
@@ -106,6 +106,7 @@ const ProfilePage = () => {
         toast.error(err.message);
         setImageDeleteLoading(false);
       });
+    event.target.blur();
   };
 
   const handleImageUpload = (e) => {
