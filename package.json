@@ -8,7 +8,9 @@
     "start": "node server/index.js",
     "server": "nodemon server/index.js",
     "client": "npm start --prefix client",
-    "install:client": "npm install --prefix client --force"
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install:client": "npm install --prefix client",
+    "setup": "npm run install:client && npm install"
   },
   "author": "prayutsu",
   "license": "ISC",
