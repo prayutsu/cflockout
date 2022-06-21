@@ -20,10 +20,12 @@ import Spinner from "../components/Spinner";
 import { SocketContext } from "../context/socket";
 import NoContestFound from "../components/NoContestFound";
 import PleaseLoginToView from "../components/PleaseLoginToView";
+import LoadingProblems from "../components/LoadingProblems";
 
 const LiveContest = ({ liveContestState, userState }) => {
   const [progress, setProgress] = useState(70);
   const [loading, setLoading] = useState(true);
+  const [fetchingProblems, setFetchingProblems] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -77,6 +79,7 @@ const LiveContest = ({ liveContestState, userState }) => {
   const handleStartContest = async (event) => {
     event.preventDefault();
     setLoading(true);
+    setFetchingProblems(true);
     const handles = [];
     const requirements = {};
     for (const contestant of liveContest.contestants) {
@@ -111,6 +114,7 @@ const LiveContest = ({ liveContestState, userState }) => {
         socket.emit("updateContest", liveContest._id);
         toast.success("Contest has been started !");
         setLoading(false);
+        setFetchingProblems(false);
       });
     } else {
       toast.error(
@@ -119,6 +123,7 @@ const LiveContest = ({ liveContestState, userState }) => {
           : "Not enough problems available to start contest, try changing the ratings."
       );
       setLoading(false);
+      setFetchingProblems(false);
     }
     event.target.blur();
   };
@@ -176,10 +181,14 @@ const LiveContest = ({ liveContestState, userState }) => {
   }
 
   return loading ? (
-    <LoadingBar progress={progress} />
+    <>
+      <LoadingBar progress={progress} />
+      {fetchingProblems ? <LoadingProblems /> : <></>}
+    </>
   ) : liveContest ? (
     <div className="h-full pt-10 w-full max-w-[1240px] p-4 md:p-12 lg:px-16">
       {/* Timer and contest id */}
+      {/* <LoadingProblems /> */}
       <div className="md:flex md:justify-between md:items-center w-full">
         <Suspense fallback={<Spinner />}>
           <Timer
