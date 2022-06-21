@@ -9,7 +9,7 @@ import { ReactComponent as VerificationFailed } from "../../components/assets/ve
 import { ReactComponent as VerifiedMail } from "../../components/assets/verified-mail.svg";
 
 const VerifyResetPasswordToken = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(80);
   const [searchParams] = useSearchParams();
 
@@ -28,18 +28,19 @@ const VerifyResetPasswordToken = () => {
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (isSuccess && user && user.verifed) {
+    if (isSuccess) {
       setLoading(false);
+      toast.success("Your email has been verified!");
     }
     if (isError) {
       setLoading(false);
       toast.error(message);
     }
-  }, [isSuccess, isError, message, user, dispatch]);
+  }, [isSuccess, isError, message, user]);
 
   return loading ? (
     <LoadingBar progress={progress} />
-  ) : !isError ? (
+  ) : isSuccess ? (
     <div className="h-full w-full p-4 md:p-12 ">
       <div className="container flex flex-col lg:flex-row items-center gap-12 my-8 lg:my-16">
         {/* Image */}

@@ -115,7 +115,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    sendMail(user);
+    sendMail(user, VERIFY_EMAIL);
 
     res.status(201).json({
       success: true,

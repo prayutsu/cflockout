@@ -9,7 +9,7 @@ import { ReactComponent as VerificationFailed } from "../components/assets/verif
 import { ReactComponent as VerifiedMail } from "../components/assets/verified-mail.svg";
 
 const VerifyEmail = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(80);
   const [searchParams] = useSearchParams();
 
@@ -28,8 +28,9 @@ const VerifyEmail = () => {
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    if (isSuccess && user && user.verifed) {
+    if (isSuccess) {
       setLoading(false);
+      toast.success("Your email has been verified!");
     }
     if (isError) {
       setLoading(false);
@@ -39,7 +40,7 @@ const VerifyEmail = () => {
 
   return loading ? (
     <LoadingBar progress={progress} />
-  ) : !isError ? (
+  ) : isSuccess && user && user.verified ? (
     <div className="h-full w-full p-4 md:p-12 ">
       <div className="container flex flex-col lg:flex-row items-center gap-12 my-8 lg:my-16">
         {/* Image */}
@@ -49,7 +50,7 @@ const VerifyEmail = () => {
         {/* Content */}
         <div className="flex flex-1 flex-col items-center gap-4">
           <h1 className="text-2xl text-center font-semibold tracking-wide">
-            Your account has been verified successfully!
+            Verification Completed, you are now Logged in!
           </h1>
           <Link
             className="group relative flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500"

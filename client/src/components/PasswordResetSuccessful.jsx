@@ -1,23 +1,22 @@
-import React from 'react'
 import { ReactComponent as ResetSuccessful } from "./assets/reset-successful.svg";
 
 const PasswordResetSuccessful = () => {
-    return (
-        <div className="h-full w-full p-4 md:p-12 ">
-          <div className="container flex flex-col lg:flex-row items-center gap-12 my-8 lg:my-16">
-            {/* Image */}
-            <div className="flex-1 flex justify-center items-center mb-10 md:mb-16 lg:mb-0 z-10">
-              <ResetSuccessful className="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-full max-w-md" />
-            </div>
-            {/* Content */}
-            <div className="flex flex-1 flex-col items-center">
-              <h1 className="text-2xl text-center font-semibold tracking-wide">
-                Password reset successful!
-              </h1>
-            </div>
-          </div>
+  return (
+    <div className="h-full w-full p-4 md:p-12 ">
+      <div className="container flex flex-col lg:flex-row items-center gap-12 my-8 lg:my-16">
+        {/* Image */}
+        <div className="flex-1 flex justify-center items-center mb-10 md:mb-16 lg:mb-0 z-10">
+          <ResetSuccessful className="w-5/6 h-5/6 sm:w-3/4 sm:h-3/4 md:w-full md:h-full max-w-md" />
         </div>
-      );
-}
+        {/* Content */}
+        <div className="flex flex-1 flex-col items-center">
+          <h1 className="text-2xl text-center font-semibold tracking-wide">
+            Password reset successful!
+          </h1>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-export default PasswordResetSuccessful
+export default PasswordResetSuccessful;
