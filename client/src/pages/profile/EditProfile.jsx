@@ -75,6 +75,7 @@ const ProfilePage = () => {
       setImageUploadLoading(true);
       await uploadBytes(storageRef, selectedImage)
         .then((snapshot) => {
+          toast.success("Profile photo updated successfully!");
           setImageUploadLoading(false);
           dispatch(getProfileImageUrl(user._id));
         })

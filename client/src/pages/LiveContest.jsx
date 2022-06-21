@@ -78,7 +78,7 @@ const LiveContest = ({ liveContestState, userState }) => {
 
   const handleStartContest = async (event) => {
     event.preventDefault();
-    setLoading(true);
+    // setLoading(true);
     setFetchingProblems(true);
     const handles = [];
     const requirements = {};
@@ -113,7 +113,7 @@ const LiveContest = ({ liveContestState, userState }) => {
       ).then(() => {
         socket.emit("updateContest", liveContest._id);
         toast.success("Contest has been started !");
-        setLoading(false);
+        // setLoading(false);
         setFetchingProblems(false);
       });
     } else {
@@ -122,7 +122,7 @@ const LiveContest = ({ liveContestState, userState }) => {
           ? cfProblems.error
           : "Not enough problems available to start contest, try changing the ratings."
       );
-      setLoading(false);
+      // setLoading(false);
       setFetchingProblems(false);
     }
     event.target.blur();
@@ -180,15 +180,15 @@ const LiveContest = ({ liveContestState, userState }) => {
     return <PleaseLoginToView />;
   }
 
-  return loading ? (
-    <>
-      <LoadingBar progress={progress} />
-      {fetchingProblems ? <LoadingProblems /> : <></>}
-    </>
+  if (loading) {
+    return <LoadingBar progress={progress} />;
+  }
+
+  return fetchingProblems ? (
+    <LoadingProblems />
   ) : liveContest ? (
     <div className="h-full pt-10 w-full max-w-[1240px] p-4 md:p-12 lg:px-16">
       {/* Timer and contest id */}
-      {/* <LoadingProblems /> */}
       <div className="md:flex md:justify-between md:items-center w-full">
         <Suspense fallback={<Spinner />}>
           <Timer
@@ -212,6 +212,11 @@ const LiveContest = ({ liveContestState, userState }) => {
           </h3>
         </div>
       </div>
+
+      <h3 className="my-8 text-gray-700 tracking-wide font-semibold text-lg text-center w-full">
+        After solving a problem, don't forget to press refresh button in the
+        ranklist.
+      </h3>
 
       {/* Problems table */}
       <div className="grid grid-cols-7 my-8 gap-8">
