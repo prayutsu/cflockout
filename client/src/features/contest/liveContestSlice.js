@@ -76,7 +76,6 @@ export const getLiveContest2 = createAsyncThunk(
           await liveContestService.invalidateContest(liveContest._id, token);
           return thunkAPI.rejectWithValue("No ongoing contest found!!");
         }
-        console.log("In slice", liveContest);
         return thunkAPI.fulfillWithValue(liveContest);
       } else {
         return thunkAPI.rejectWithValue(res.error);

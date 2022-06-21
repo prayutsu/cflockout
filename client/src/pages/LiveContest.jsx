@@ -1,93 +1,126 @@
-import React, { useState } from "react";
-import Timer from "../components/Timer";
-
-import { useEffect, useContext } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
-import codeforcesService from "../data/codeforcesService";
-import {
-  getLiveContest,
-  leaveContest,
-  solveProblem,
-  reset,
-} from "../features/contest/liveContestSlice";
-import { useSearchParams } from "react-router-dom";
-import { SocketContext } from "../context/socket";
-import { RefreshIcon } from "@heroicons/react/outline";
-import { getUnsolvedProblemsWithRating } from "../data/problemsParser";
-import { startContest } from "../features/contest/liveContestSlice";
-import { changeIndex } from "../features/nav/navSlice";
-import CopyButton from "../components/CopyButton";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { Suspense, useContext, useEffect, useState } from "react";
 import LoadingBar from "react-top-loading-bar";
+import { connect, useDispatch } from "react-redux";
+import {
+  getLiveContest2,
+  leaveContest,
+  resetError,
+  solveProblem,
+  startContest,
+} from "../features/contest/liveContestSlice";
+import { changeIndex } from "../features/nav/navSlice";
+import { toast } from "react-toastify";
+import codeforcesService from "../data/codeforcesService";
+import { useNavigate } from "react-router-dom";
+import { getUnsolvedProblemsWithRating } from "../data/problemsParser";
+import Timer from "../components/Timer";
+import CopyButton from "../components/CopyButton";
+import { RefreshIcon } from "@heroicons/react/outline";
+import Spinner from "../components/Spinner";
+import { SocketContext } from "../context/socket";
+import NoContestFound from "../components/NoContestFound";
+import PleaseLoginToView from "../components/PleaseLoginToView";
 
 const LiveContest = ({ liveContestState, userState }) => {
-  const dispatch = useDispatch();
-  const [searchParams] = useSearchParams();
-  const roomId = searchParams.get("contestId");
-  const socket = useContext(SocketContext);
-  const navigate = useNavigate();
-
-  const [loading, setLoading] = useState(true);
-  // const [liveContest, setLiveContest] = useState(null);
-
-  const { liveContest, loadingContestFinished, isError, messgae, isSuccess } =
-    liveContestState;
-
-  const {user} = userState; 
-
-
-
   const [progress, setProgress] = useState(70);
+  const [loading, setLoading] = useState(true);
 
-  // const { liveContest, loadingContestFinished, isError, message } = useSelector(
-  //   (state) => state.liveContestState
-  // );
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const socket = useContext(SocketContext);
 
-  // console.log(liveContest, loadingContestFinished, isError, message);
-  // console.log(loadingContestFinished)
-
-  // const { user } = useSelector((state) => state.auth);
+  const { liveContest, loadingContestFinished, isError, message, update } =
+    liveContestState;
+  const { user } = userState;
 
   useEffect(() => {
     dispatch(changeIndex(4));
-    dispatch(getLiveContest());
-    console.log(liveContest);
+    socket.on("contestUpdated", (roomId) => {
+      dispatch(getLiveContest2());
+    });
+
+    if (user) {
+      dispatch(getLiveContest2())
+        .then(() => {
+          setLoading(false);
+        })
+        .catch(() => {
+          setLoading(false);
+        });
+    }
   }, []); // eslint-disable-line
 
-  // useEffect(() => {
-  //   dispatch(changeIndex(4));
-  //   socket.on("contestUpdated", (roomId) => {
-  //     console.log("contestUpdated was emitted!", roomId);
-  //     dispatch(getLiveContest());
-  //   });
-  //   return () => {
-  //     socket.off("contestUpdated");
-  //   };
-  // }, []); // eslint-disable-line
+  useEffect(() => {
+    if (liveContest) {
+      socket.emit("joinRoom", liveContest._id);
+    }
+  }, [liveContest, socket]);
 
-  // useEffect(() => {
-  //   if (isError) {
-  //     console.log("Here in isError", message);
-  //     toast.error(message);
-  //   }
-  //   // dispatch(getLiveContest());
-  // }, [isError, message]);
+  useEffect(() => {
+    if (isError) {
+      toast.error(message);
+      dispatch(resetError());
+    }
+  }, [isError, message, dispatch]);
 
-  // useEffect(() => {
-  //   socket.emit("joinRoom", roomId);
+  const handleLeaveContest = async (event) => {
+    event.preventDefault();
+    const contestId = liveContest._id;
+    dispatch(leaveContest(contestId)).then(() => {
+      socket.emit("leaveContest", contestId);
+      navigate("/", { replace: true });
+    });
+    event.target.blur();
+  };
 
-  //   return () => {
-  //     socket.emit("leaveRoom", roomId);
-  //   };
-  // }, []); // eslint-disable-line
+  const handleStartContest = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    const handles = [];
+    const requirements = {};
+    for (const contestant of liveContest.contestants) {
+      handles.push(contestant.username);
+    }
+    for (const problem of liveContest.problems) {
+      requirements[problem.rating] = requirements[problem.rating] || 0;
+      requirements[problem.rating]++;
+    }
+    const cfProblems = await getUnsolvedProblemsWithRating(
+      handles,
+      requirements
+    );
 
-  // useEffect(() => {
-  //   if (update) {
-  //     console.log(`The update number is ${update}`);
-  //     socket.emit("updateContest", roomId);
-  //   }
-  // }, [socket, update, roomId]);
+    if (cfProblems.status === "OK") {
+      let problems = [];
+      for (let problem of liveContest.problems) {
+        const cfProblem = cfProblems.problems[problem.rating].pop();
+        const newProblem = {
+          ...problem,
+          name: cfProblem.name,
+          problemLink: `https://codeforces.com/problemset/problem/${cfProblem.contestId}/${cfProblem.index}`,
+        };
+        problems.push(newProblem);
+      }
+      dispatch(
+        startContest({
+          id: liveContest._id,
+          problems: problems,
+        })
+      ).then(() => {
+        socket.emit("updateContest", liveContest._id);
+        toast.success("Contest has been started !");
+        setLoading(false);
+      });
+    } else {
+      toast.error(
+        cfProblems.error
+          ? cfProblems.error
+          : "Not enough problems available to start contest, try changing the ratings."
+      );
+      setLoading(false);
+    }
+    event.target.blur();
+  };
 
   const updateRankList = async () => {
     // Fetch last 100 submissions for each user.
@@ -105,10 +138,16 @@ const LiveContest = ({ liveContestState, userState }) => {
         }
       }
 
-      const winners = await codeforcesService.findWinnerForEachProblem(
+      const res = await codeforcesService.findWinnerForEachProblem(
         handles,
         unsolvedProblems
       );
+      if (res.status !== "OK") {
+        toast.error(res.error);
+        return;
+      }
+      const winners = res.winners;
+      let updated = false;
       for (const [problem, winner] of Object.entries(winners)) {
         dispatch(
           solveProblem({
@@ -118,68 +157,12 @@ const LiveContest = ({ liveContestState, userState }) => {
             username: winner.handle,
           })
         );
+        updated = true;
+      }
+      if (updated) {
+        socket.emit("updateContest", liveContest._id);
       }
     }
-  };
-
-  const handleLeaveContest = async () => {
-    const contestId = liveContest._id;
-    // console.log("In leave", contestId);
-    const resetState = new Promise((resolve, _) => {
-      dispatch(leaveContest(contestId));
-      resolve();
-    });
-    resetState
-      .then(() => {
-        navigate("/", {
-          replace: true,
-        });
-      })
-      .catch((err) => {
-        toast.error(err.message);
-        // dispatch(reset());
-      });
-  };
-
-  const handleStartContest = async () => {
-    // setLoading(true);
-    const handles = [];
-    const requirements = {};
-    for (const contestant of liveContest.contestants) {
-      handles.push(contestant.username);
-    }
-    for (const problem of liveContest.problems) {
-      requirements[problem.rating] = requirements[problem.rating] || 0;
-      requirements[problem.rating]++;
-    }
-    const cfProblems = await getUnsolvedProblemsWithRating(
-      handles,
-      requirements
-    );
-
-    if (cfProblems.sucess) {
-      let problems = [];
-      for (let problem of liveContest.problems) {
-        const cfProblem = cfProblems.problems[problem.rating].pop();
-        const newProblem = {
-          ...problem,
-          name: cfProblem.name,
-          problemLink: `https://codeforces.com/problemset/problem/${cfProblem.contestId}/${cfProblem.index}`,
-        };
-        problems.push(newProblem);
-      }
-      dispatch(
-        startContest({
-          id: liveContest._id,
-          problems: problems,
-        })
-      );
-    } else {
-      toast.error(
-        "Not enough problems available to start contest, try changing the ratings."
-      );
-    }
-    // setLoading(false);
   };
 
   const getRemainingTime = () => {
@@ -188,28 +171,22 @@ const LiveContest = ({ liveContestState, userState }) => {
   };
 
   if (!user) {
-    return (
-      <div>
-        <h1>You need to login to participate in a contest</h1>
-      </div>
-    );
+    return <PleaseLoginToView />;
   }
 
   return loading ? (
     <LoadingBar progress={progress} onLoaderFinished={() => setProgress(0)} />
-  ) : liveContest === null ? (
-    <div>No ongoing contests found!!</div>
-  ) : (
+  ) : liveContest ? (
     <div className="h-full pt-10 w-full max-w-[1240px] p-4 md:p-12 lg:px-16">
       {/* Timer and contest id */}
       <div className="md:flex md:justify-between md:items-center w-full">
-        {/* <Suspense fallback={<Spinner/>}> */}
-        <Timer
-          duration={liveContest.duration}
-          isStarted={liveContest.isStarted}
-          countDownTimestampInMs={getRemainingTime()}
-        />
-        {/* </Suspense> */}
+        <Suspense fallback={<Spinner />}>
+          <Timer
+            duration={liveContest.duration}
+            isStarted={liveContest.isStarted}
+            countDownTimestampInMs={getRemainingTime()}
+          />
+        </Suspense>
         <div className="bg-slate-100 rounded-xl shadow-lg p-4 my-4">
           <div className="flex justify-between">
             <h1 className="text-cyan-800 text-m font-mono">Contest ID</h1>
@@ -250,7 +227,7 @@ const LiveContest = ({ liveContestState, userState }) => {
                 className="bg-white-200 py-2 w-full grid grid-cols-4 gap-2"
               >
                 <div className="text-center col-span-2 p-2">
-                  <h3 className="text-gray-800 font-semibold">
+                  <h3 className="text-cyan-800 font-bold tracking-wider underline">
                     <a
                       target="_blank"
                       rel="noreferrer"
@@ -337,11 +314,11 @@ const LiveContest = ({ liveContestState, userState }) => {
       <div className="w-full gap-8 flex items-center justify-center md:gap-12">
         <button
           onClick={handleStartContest}
-          disabled={liveContest.isStarted}
+          disabled={liveContest.isStarted || user._id !== liveContest.admin}
           className={
             liveContest.isStarted
               ? "hidden"
-              : user.id === liveContest.admin.id
+              : user._id === liveContest.admin
               ? `inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 ${
                   !loadingContestFinished ? "cursor-not-allowed" : ""
                 }`
@@ -367,16 +344,16 @@ const LiveContest = ({ liveContestState, userState }) => {
         <div></div>
       )}
     </div>
+  ) : (
+    <NoContestFound />
   );
 };
 
-export default LiveContest;
+function mapStateToProps(state) {
+  return {
+    liveContestState: state.liveContestState,
+    userState: state.auth,
+  };
+}
 
-// function mapStateToProps(state) {
-//   return {
-//     liveContestState: state.liveContestState,
-//     userState: state.auth,
-//   };
-// }
-
-// export default connect(mapStateToProps)(LiveContest);
+export default connect(mapStateToProps)(LiveContest);

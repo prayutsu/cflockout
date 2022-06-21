@@ -36,7 +36,6 @@ const JoinContest = () => {
 
   useEffect(() => {
     if (update && contestId) {
-      // console.log(`This is udpate - ${update}`);
       socket.emit("updateContest", contestId);
     }
   }, [update, socket, contestId]);

@@ -26,13 +26,12 @@ const makeCodeforcesRequest = async (config) => {
           }
         })
         .catch((error) => {
-          console.log(error);
           errorMsg = error.message.toString();
         });
       if (data.status && data.status === "OK") return data;
       await sleep(1000);
     } catch (error) {
-      console.log(error);
+      errorMsg = error.message.toString();
     }
   }
   return {

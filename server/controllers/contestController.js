@@ -69,7 +69,6 @@ const createContest = asyncHandler(async (req, res) => {
   });
 
   if (ongoingContest) {
-    console.log(ongoingContest);
     res.status(409);
     throw Error("The user is already participating in a running contest.");
   }
@@ -282,10 +281,8 @@ const invalidateContest = asyncHandler(async (req, res) => {
   const contestDuration =
     ongoingContest.startedAt.getTime() + ongoingContest.duration * 60 * 1000;
 
-  console.log("Heree..... myVar = ", myVar);
   const solvedProblems = await getUpdatedRankList(ongoingContest);
 
-  console.log("solvedProblems", solvedProblems);
   const updatedProblems = [];
 
   for (const problem of ongoingContest.problems) {

@@ -20,7 +20,6 @@ const VerifyResetPasswordToken = () => {
 
   useEffect(() => {
     const token = searchParams.get("token");
-    console.log(token)
     dispatch(verifyResetPasswordToken(token));
 
     return () => {

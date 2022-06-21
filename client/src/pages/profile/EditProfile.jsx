@@ -75,13 +75,10 @@ const ProfilePage = () => {
       setImageUploadLoading(true);
       await uploadBytes(storageRef, selectedImage)
         .then((snapshot) => {
-          const url = snapshot.downloadURL;
-          console.log(url);
           setImageUploadLoading(false);
           dispatch(getProfileImageUrl(user._id));
         })
         .catch((err) => {
-          console.log(err);
           setImageUploadLoading(false);
           toast.error("An error occurred while updating profile photo");
         });
@@ -110,7 +107,6 @@ const ProfilePage = () => {
   };
 
   const handleImageUpload = (e) => {
-    console.log(e);
     if (e.target.files.length > 0) {
       if (
         e.target.files[0].size <= 1048576 &&
@@ -118,8 +114,6 @@ const ProfilePage = () => {
           e.target.files[0].type === "image/png")
       ) {
         setSelectedImage(e.target.files[0]);
-        console.log(e.target.files[0]);
-        console.log(typeof e.target.files[0]);
         setIsImageUploaded(true);
       } else {
         toast.error(

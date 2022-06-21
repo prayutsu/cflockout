@@ -7,7 +7,7 @@ import JoinContest from "./pages/JoinContest";
 import CreateContest from "./pages/CreateContest";
 import { socket, SocketContext } from "./context/socket";
 import Navbar from "./components/Navbar";
-import LiveContest2 from "./pages/LiveContest2";
+import LiveContest from "./pages/LiveContest";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Footer from "./components/Footer";
@@ -46,7 +46,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/contests/create" element={<CreateContest />} />
                 <Route exact path="/contests/join" element={<JoinContest />} />
-                <Route path="/contests/live" element={<LiveContest2 />} />
+                <Route path="/contests/live" element={<LiveContest />} />
                 <Route path="/verify" element={<VerifyEmail />} />
                 <Route path="/profile/edit" element={<EditProfile />} />
               </Routes>

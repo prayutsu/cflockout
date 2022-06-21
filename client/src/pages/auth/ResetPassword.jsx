@@ -24,9 +24,7 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (passwordResetSuccess) {
-      console.log("Here");
       toast.success("Password reset successful");
-      console.log("Heree");
       setPasswordResetComplete(true);
     }
     if (isError) {

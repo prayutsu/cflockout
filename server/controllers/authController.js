@@ -75,7 +75,6 @@ const sendMail = async (user, mailType) => {
           ? getVerifyMailOptions(user, emailToken)
           : getResetPasswordMailOptions(user, emailToken);
       transporter.sendMail(mailOptions);
-      console.log(`Email sent to ${user.email}`);
     }
   );
 };
@@ -168,7 +167,6 @@ const sendResetPasswordLink = asyncHandler(async (req, res) => {
   if (!errors.isEmpty()) {
     throw new Error(errors.array()[0].msg);
   }
-  console.log(req.body);
   const email = req.body.email;
   const user = await User.findOne({ email });
   if (!user) {
@@ -232,7 +230,6 @@ const verifyPasswordResetToken = asyncHandler(async (req, res) => {
   if (!req.params.token) {
     throw new Error("Verification token not present.");
   }
-  console.log(req.params.token);
   const data = jwt.verify(req.params.token, process.env.JWT_SECRET);
   const { id } = data;
   const user = await User.findById(id);
@@ -257,7 +254,6 @@ const verifyUser = asyncHandler(async (req, res) => {
   if (!req.params.token) {
     throw new Error("Verification token not present.");
   }
-  console.log(req.params.token);
   const data = jwt.verify(req.params.token, process.env.JWT_SECRET);
   const { id } = data;
   const tempUser = await TempUser.findById(id);
