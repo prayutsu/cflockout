@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import LoadingBar from "react-top-loading-bar";
+import LoadingBar from "../components/LoadingBar";
 import { reset, verify } from "../features/auth/authSlice";
 import { ReactComponent as VerificationFailed } from "../components/assets/verification-failed.svg";
 import { ReactComponent as VerifiedMail } from "../components/assets/verified-mail.svg";
@@ -11,7 +11,7 @@ import { ReactComponent as VerifiedMail } from "../components/assets/verified-ma
 const VerifyEmail = () => {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(80);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const dispatch = useDispatch();
   const { user, isSuccess, isError, message } = useSelector(
@@ -21,7 +21,7 @@ const VerifyEmail = () => {
   useEffect(() => {
     const token = searchParams.get("token");
     dispatch(verify(token));
-
+    setProgress(90);
     return () => {
       dispatch(reset());
     };
@@ -38,7 +38,7 @@ const VerifyEmail = () => {
   }, [isSuccess, isError, message, user]);
 
   return loading ? (
-    <LoadingBar progress={progress} onLoaderFinished={() => setProgress(0)} />
+    <LoadingBar progress={progress} />
   ) : !isError ? (
     <div className="h-full w-full p-4 md:p-12 ">
       <div className="container flex flex-col lg:flex-row items-center gap-12 my-8 lg:my-16">

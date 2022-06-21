@@ -1,5 +1,5 @@
 import { Suspense, useContext, useEffect, useState } from "react";
-import LoadingBar from "react-top-loading-bar";
+import LoadingBar from "../components/LoadingBar";
 import { connect, useDispatch } from "react-redux";
 import {
   getLiveContest2,
@@ -29,7 +29,7 @@ const LiveContest = ({ liveContestState, userState }) => {
   const navigate = useNavigate();
   const socket = useContext(SocketContext);
 
-  const { liveContest, loadingContestFinished, isError, message, update } =
+  const { liveContest, loadingContestFinished, isError, message } =
     liveContestState;
   const { user } = userState;
 
@@ -37,6 +37,7 @@ const LiveContest = ({ liveContestState, userState }) => {
     dispatch(changeIndex(4));
     socket.on("contestUpdated", (roomId) => {
       dispatch(getLiveContest2());
+      setProgress(90);
     });
 
     if (user) {
@@ -175,7 +176,7 @@ const LiveContest = ({ liveContestState, userState }) => {
   }
 
   return loading ? (
-    <LoadingBar progress={progress} onLoaderFinished={() => setProgress(0)} />
+    <LoadingBar progress={progress} />
   ) : liveContest ? (
     <div className="h-full pt-10 w-full max-w-[1240px] p-4 md:p-12 lg:px-16">
       {/* Timer and contest id */}

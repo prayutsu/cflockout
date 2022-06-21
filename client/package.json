@@ -19,7 +19,6 @@
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
     "react-toastify": "^9.0.3",
-    "react-top-loading-bar": "^2.1.0",
     "socket.io-client": "^4.4.1"
   },
   "scripts": {

@@ -3,7 +3,7 @@ import { ChevronUpIcon } from "@heroicons/react/solid";
 import React, { useState } from "react";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import LoadingBar from "react-top-loading-bar";
+import LoadingBar from "../components/LoadingBar";
 import { ReactComponent as Performance } from "../components/assets/performance.svg";
 import {
   getContests,
@@ -14,7 +14,7 @@ import PleaseLoginToView from "../components/PleaseLoginToView";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
-  const [progress, setProgress] = useState(70);
+  const [progress, setProgress] = useState(80);
 
   const dispatch = useDispatch();
   const { contestsList, isSuccess, isError, message } = useSelector(
@@ -25,6 +25,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       dispatch(getContests());
+      setProgress(90);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -45,7 +46,7 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <LoadingBar progress={progress} onLoaderFinished={() => setProgress(0)} />
+      <LoadingBar progress={progress} />
     );
   }
 
