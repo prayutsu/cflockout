@@ -1,14 +1,14 @@
 import { Suspense, useContext, useEffect, useState } from "react";
 import LoadingBar from "../components/LoadingBar";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
-  getLiveContest2,
+  getLiveContest,
   leaveContest,
   resetError,
   solveProblem,
   startContest,
 } from "../features/contest/liveContestSlice";
-import { changeIndex } from "../features/nav/navSlice";
+import { changeIndex, viewModal } from "../features/nav/navSlice";
 import { toast } from "react-toastify";
 import codeforcesService from "../data/codeforcesService";
 import { useNavigate } from "react-router-dom";
@@ -21,11 +21,13 @@ import { SocketContext } from "../context/socket";
 import NoContestFound from "../components/NoContestFound";
 import PleaseLoginToView from "../components/PleaseLoginToView";
 import LoadingProblems from "../components/LoadingProblems";
+import Modal from "../components/Modal";
 
 const LiveContest = ({ liveContestState, userState }) => {
   const [progress, setProgress] = useState(70);
   const [loading, setLoading] = useState(true);
   const [fetchingProblems, setFetchingProblems] = useState(false);
+  const {isModalOpen} = useSelector(state => state.nav);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,12 +40,12 @@ const LiveContest = ({ liveContestState, userState }) => {
   useEffect(() => {
     dispatch(changeIndex(4));
     socket.on("contestUpdated", (roomId) => {
-      dispatch(getLiveContest2());
+      dispatch(getLiveContest());
       setProgress(90);
     });
 
     if (user) {
-      dispatch(getLiveContest2())
+      dispatch(getLiveContest())
         .then(() => {
           setLoading(false);
         })
@@ -66,19 +68,23 @@ const LiveContest = ({ liveContestState, userState }) => {
     }
   }, [isError, message, dispatch]);
 
-  const handleLeaveContest = async (event) => {
-    event.preventDefault();
+  const leaveContestAction = () => {
     const contestId = liveContest._id;
+    console.log("clicked action!");
     dispatch(leaveContest(contestId)).then(() => {
       socket.emit("leaveContest", contestId);
       navigate("/", { replace: true });
     });
+  };
+
+  const handleLeaveContest = async (event) => {
+    event.preventDefault();
+    dispatch(viewModal());
     event.target.blur();
   };
 
   const handleStartContest = async (event) => {
     event.preventDefault();
-    // setLoading(true);
     setFetchingProblems(true);
     const handles = [];
     const requirements = {};
@@ -122,7 +128,6 @@ const LiveContest = ({ liveContestState, userState }) => {
           ? cfProblems.error
           : "Not enough problems available to start contest, try changing the ratings."
       );
-      // setLoading(false);
       setFetchingProblems(false);
     }
     event.target.blur();
@@ -188,6 +193,15 @@ const LiveContest = ({ liveContestState, userState }) => {
     <LoadingProblems />
   ) : liveContest ? (
     <div className="h-full pt-10 w-full max-w-[1240px] p-4 md:p-12 lg:px-16">
+      {/* Leave Contest Modal */}
+      {isModalOpen && (
+        <Modal
+          title="Leave Contest"
+          message="Are you sure you want to leave the contest? This contest will not appear in the dashboard if you leave it in between."
+          confirmAction={leaveContestAction}
+        />
+      )}
+
       {/* Timer and contest id */}
       <div className="md:flex md:justify-between md:items-center w-full">
         <Suspense fallback={<Spinner />}>
@@ -348,7 +362,6 @@ const LiveContest = ({ liveContestState, userState }) => {
           className={`inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500" ${
             !loadingContestFinished ? "cursor-not-allowed" : ""
           }`}
-          // disabled={loadingContestFinished}
         >
           Leave Contest
         </button>

@@ -59,7 +59,7 @@ export const leaveContest = createAsyncThunk(
 );
 
 // Get an ongoing contest.
-export const getLiveContest2 = createAsyncThunk(
+export const getLiveContest = createAsyncThunk(
   "liveContests/ongoing",
   async (_, thunkAPI) => {
     try {
@@ -177,17 +177,17 @@ export const liveContestSlice = createSlice({
         state.message = action.payload;
         state.loadingContestFinished = true;
       })
-      .addCase(getLiveContest2.pending, (state) => {
+      .addCase(getLiveContest.pending, (state) => {
         state.isLoading = true;
         state.loadingContestFinished = false;
       })
-      .addCase(getLiveContest2.fulfilled, (state, action) => {
+      .addCase(getLiveContest.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isSuccess = true;
         state.liveContest = action.payload;
         state.loadingContestFinished = true;
       })
-      .addCase(getLiveContest2.rejected, (state, action) => {
+      .addCase(getLiveContest.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
         state.liveContest = null;
