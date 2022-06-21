@@ -24,7 +24,6 @@ const getSolvedProblemsByAllUsers = async (handles) => {
   const solvedProblems = new Set();
   for (const handle of handles) {
     const submissions = await codeforcesService.fetchUserSubmissions(handle);
-    console.log(submissions, handle);
     if (submissions.status === "OK") {
       for (const submission of submissions.result) {
         if (submission.verdict === "OK")
