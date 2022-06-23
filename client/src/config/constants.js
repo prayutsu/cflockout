@@ -4,11 +4,11 @@ const USER_KEY = "cf_lockout_user";
 const MIN_DURATION = 1;
 const MAX_DURATION = 180;
 const MIN_NUMBER_OF_PROBLEMS = 1;
-const MAX_NUMBER_OF_PROBLEMS = 5;
+const MAX_NUMBER_OF_PROBLEMS = 10;
 const MIN_PROBLEM_POINTS = 1;
 const MAX_PROBLEM_POINTS = 100;
 const MAX_PLAYERS = 6;
-const MAX_PROBLEM_RATING = 2500;
+const MAX_PROBLEM_RATING = 3500;
 const MIN_PROBLEM_RATING = 800;
 const SERVER_URL =
   process.env.REACT_APP_ENV === "production"

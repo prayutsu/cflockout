@@ -112,13 +112,14 @@ const ProfilePage = () => {
       if (
         e.target.files[0].size <= 1048576 &&
         (e.target.files[0].type === "image/jpeg" ||
+          e.target.files[0].type === "image/jpg" ||
           e.target.files[0].type === "image/png")
       ) {
         setSelectedImage(e.target.files[0]);
         setIsImageUploaded(true);
       } else {
         toast.error(
-          "Only PNG and JPEG images with size less than 1MB are allowed"
+          "Only PNG, JPG or JPEG images with size less than 1MB are allowed"
         );
       }
     }
@@ -337,7 +338,7 @@ const ProfilePage = () => {
                           </label>
                         </div>
                         <p className="text-xs text-gray-500">
-                          {isImageUploaded ? "" : "PNG, JPG up to 1MB"}
+                          {isImageUploaded ? "" : "PNG, JPG or JPEG up to 1MB"}
                         </p>
                       </div>
                     </div>

@@ -3,6 +3,8 @@ import {
   MAX_NUMBER_OF_PROBLEMS,
   MIN_DURATION,
   MAX_DURATION,
+  MIN_PROBLEM_RATING,
+  MAX_PROBLEM_RATING,
 } from "../config/constants";
 import {
   resetSuccessIndicators,
@@ -76,7 +78,9 @@ const CreateContest = () => {
 
   const handleAddProblem = () => {
     if (contestProblems.length >= MAX_NUMBER_OF_PROBLEMS) {
-      toast.error("Maximum number of problems allowed is 5.");
+      toast.error(
+        `Maximum number of problems allowed is ${MAX_NUMBER_OF_PROBLEMS}`
+      );
       return;
     }
     setContestProblems((previousState) => [
@@ -183,8 +187,8 @@ const CreateContest = () => {
                             name="rating"
                             id="rating"
                             step={100}
-                            min={800}
-                            max={3000}
+                            min={MIN_PROBLEM_RATING}
+                            max={MAX_PROBLEM_RATING}
                             required
                             onChange={onChangeProblem(index)}
                             value={problem.rating}
