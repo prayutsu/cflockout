@@ -19,7 +19,7 @@ const io = new Server(httpServer, {});
 io.on("connection", (socket) => {
   // console.log("A user connected!");
   socket.on("joinRoom", (contestId) => {
-    console.log(`Joined ${contestId}`);
+    // console.log(`Joined ${contestId}`);
     socket.join(contestId);
 
     socket.on("updateContest", (contestId) => {
@@ -54,5 +54,7 @@ app.use("/api", require("./routes/testRoutes"));
 app.use(errorHandler);
 
 httpServer.listen(port, () => {
-  console.log(`Socket IO listening on port ${port}`);
+  if (process.env.NODE_ENV === "development") {
+    console.log(`Socket IO listening on port ${port}`);
+  }
 });
