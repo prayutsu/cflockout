@@ -2,13 +2,13 @@ import { Fragment, useEffect } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import { AiOutlineGithub } from "react-icons/ai";
 import { useSelector, useDispatch } from "react-redux";
 import { getProfileImageUrl, logout } from "../features/auth/authSlice";
 import { changeIndex } from "../features/nav/navSlice";
 import { ReactComponent as CflockoutLogo } from "./assets/new-cflockout-logo.svg";
 import { ReactComponent as CflockoutIconLogo } from "./assets/cflockout-logo-icon.svg";
 import Avatar from "./Avatar";
+import { SiBuymeacoffee } from "react-icons/si";
 
 const navigation = [
   { name: "Home", route: "/", index: 0 },
@@ -117,14 +117,13 @@ export default function Navbar() {
                   type="button"
                   className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:ring-offset-gray-800 focus:ring-white"
                 >
-                  <span className="sr-only">Github Link</span>
+                  <span className="sr-only">BuyMeACoffee Link</span>
                   <a
                     target="_blank"
                     rel="noreferrer"
-                    href="https://github.com/prayutsu/cflockout"
+                    href="https://www.buymeacoffee.com/prayutsu"
                   >
-                    {" "}
-                    <AiOutlineGithub className="h-6 w-6" aria-hidden="true" />
+                    <SiBuymeacoffee className="h-6 w-6" />
                   </a>
                 </button>
 
@@ -145,12 +144,6 @@ export default function Navbar() {
                             />
                           )}
                         </span>
-
-                        {/* <img
-                          className="h-8 w-8 rounded-full"
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                          alt=""
-                        /> */}
                       </Menu.Button>
                     </div>
                     <Transition
