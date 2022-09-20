@@ -14,24 +14,12 @@ const {
   VERIFY_EMAIL,
 } = require("../config/constants");
 
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  REDIRECT_URI
-);
-
-oauth2Client.setCredentials({
-  refresh_token: process.env.CFLOCKOUT_REFRESH_TOKEN,
-});
-
 const getVerifyMailOptions = (user, emailToken) => {
   const url = `${CLIENT_URL}/verify?token=${emailToken}`;
   return {
     from: process.env.CFLOCKOUT_EMAIL_ID,
     to: user.email,
     subject: "Verify your account",
-    secure: true,
-    text: `Hi ${user.name},\n\nNote: If this mail appears in spam folder, make sure to report it not phishing to be able to click the link.\nPlease click the below link to verify your email.\n${url}`,
     html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to verify your email.<br> <a href="${url}">Click here to verify</a></h3>`,
   };
 };
@@ -42,15 +30,11 @@ const getResetPasswordMailOptions = (user, emailToken) => {
     from: process.env.CFLOCKOUT_EMAIL_ID,
     to: user.email,
     subject: "Reset your password",
-    secure: true,
-    text: `Hi ${user.name},\n\nNote: If this mail appears in spam folder, make sure to report it not phishing to be able to click the link.\nPlease click the below link to reset your password.\n${url}`,
     html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to reset your password.<br> <a href="${url}">Click here to reset</a></h3>`,
   };
 };
 
 const sendMail = async (user, mailType) => {
-  const accessToken = oauth2Client.getAccessToken();
-
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -59,7 +43,7 @@ const sendMail = async (user, mailType) => {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       refreshToken: process.env.CFLOCKOUT_REFRESH_TOKEN,
-      accessToken: accessToken,
+      expires: 1484314697598,
     },
   });
 
