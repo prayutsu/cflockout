@@ -31,20 +31,23 @@ const sendMail = async (user, mailType) => {
     },
   });
 
-  jwt.sign(
-    { id: user._id },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1d",
-    },
-    (err, emailToken) => {
-      const mailOptions =
-        mailType === VERIFY_EMAIL
-          ? getVerifyMailOptions(user, emailToken)
-          : getResetPasswordMailOptions(user, emailToken);
-      transporter.sendMail(mailOptions);
-    }
-  );
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+
+  const mailOptions =
+    mailType === VERIFY_EMAIL
+      ? getVerifyMailOptions(user, token)
+      : getResetPasswordMailOptions(user, token);
+
+  await transporter
+    .sendMail(mailOptions)
+    .then(() => {
+      console.log("Email sent successfully!");
+    })
+    .catch((err) => {
+      console.log("Error sending email: ", err);
+    });
 };
 
 module.exports = { sendMail };
