@@ -13,7 +13,7 @@ const VERIFY_EMAIL = "VERIFY_EMAIL";
 const RESET_PASSWORD = "RESET_PASSWORD";
 const CLIENT_URL =
   process.env.NODE_ENV === "production"
-    ? "https://cflockout.live"
+    ? "https://cflockout.vercel.app"
     : "http://localhost:3000";
 
 module.exports = {

@@ -5,63 +5,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 const axios = require("axios");
-const nodemailer = require("nodemailer");
-const { google } = require("googleapis");
-const {
-  REDIRECT_URI,
-  CLIENT_URL,
-  RESET_PASSWORD,
-  VERIFY_EMAIL,
-} = require("../config/constants");
-
-const getVerifyMailOptions = (user, emailToken) => {
-  const url = `${CLIENT_URL}/verify?token=${emailToken}`;
-  return {
-    from: process.env.CFLOCKOUT_EMAIL_ID,
-    to: user.email,
-    subject: "Verify your account",
-    html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to verify your email.<br> <a href="${url}">Click here to verify</a></h3>`,
-  };
-};
-
-const getResetPasswordMailOptions = (user, emailToken) => {
-  const url = `${CLIENT_URL}/auth/verify/reset-password-token?token=${emailToken}`;
-  return {
-    from: process.env.CFLOCKOUT_EMAIL_ID,
-    to: user.email,
-    subject: "Reset your password",
-    html: `<p>Hi <strong>${user.name}</strong>,<br>Welcome to CfLockout.<br></p><p><br><strong>Note: If this mail appears in spam folder, make sure to report it <i>not phishing<i> to be able to click the link.</strong></p><h3><br>Please click the below link to reset your password.<br> <a href="${url}">Click here to reset</a></h3>`,
-  };
-};
-
-const sendMail = async (user, mailType) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      type: "OAuth2",
-      user: process.env.CFLOCKOUT_EMAIL_ID,
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      refreshToken: process.env.CFLOCKOUT_REFRESH_TOKEN,
-      expires: 1484314697598,
-    },
-  });
-
-  jwt.sign(
-    { id: user._id },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "1d",
-    },
-    (err, emailToken) => {
-      const mailOptions =
-        mailType === VERIFY_EMAIL
-          ? getVerifyMailOptions(user, emailToken)
-          : getResetPasswordMailOptions(user, emailToken);
-      transporter.sendMail(mailOptions);
-    }
-  );
-};
+const { RESET_PASSWORD, VERIFY_EMAIL } = require("../config/constants");
+const { sendMail } = require("../services/emailService");
 
 const registerUser = asyncHandler(async (req, res) => {
   const errors = validationResult(req);

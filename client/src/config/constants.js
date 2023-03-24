@@ -10,10 +10,8 @@ const MAX_PROBLEM_POINTS = 100;
 const MAX_PLAYERS = 6;
 const MAX_PROBLEM_RATING = 3500;
 const MIN_PROBLEM_RATING = 800;
-const SERVER_URL =
-  process.env.REACT_APP_ENV === "production"
-    ? process.env.REACT_APP_SERVER_URL
-    : "http://localhost:5000/";
+const SERVER_URL = process.env.REACT_APP_SERVER_URL;
+const SOCKET_URL = process.env.REACT_APP_SOCKETIO_ENDPOINT;
 
 module.exports = {
   CF_API_URL,
@@ -29,4 +27,5 @@ module.exports = {
   MIN_PROBLEM_RATING,
   MAX_PROBLEM_RATING,
   SERVER_URL,
+  SOCKET_URL,
 };
